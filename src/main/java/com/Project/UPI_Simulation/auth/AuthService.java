@@ -83,4 +83,37 @@ public class AuthService {
         return savedUser;
 
     }
+
+    public String sendLoginOtp(LoginRequest request){
+        userRepository.findByNameAndPhoneNumber(request.getName(), request.getPhoneNumber()).orElseThrow(() -> new RuntimeException("User not found"));
+
+        otpService.generateOtp(request.getPhoneNumber());
+
+        return "Login OTP sent successfully";
+    }
+
+    public String verifyLoginOtp(
+            VerifyOtpRequest request
+    ) {
+
+        boolean verified =
+                otpService.verifyOtp(
+                        request.getPhoneNumber(),
+                        request.getOtp()
+                );
+
+        if (!verified) {
+
+            throw new RuntimeException(
+                    "Invalid OTP"
+            );
+        }
+
+        otpService.clearOtp(
+                request.getPhoneNumber()
+        );
+
+        return "Login successful";
+    }
+
 }

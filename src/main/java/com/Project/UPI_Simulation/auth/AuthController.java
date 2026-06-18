@@ -27,4 +27,19 @@ public class AuthController {
     public User createProfile(@RequestBody CreateProfileRequest request){
         return authService.createProfile(request);
     }
+
+    @PostMapping("/send-login-otp")
+    public String sendLoginOtp(@RequestBody LoginRequest request){
+        return authService.sendLoginOtp(request);
+    }
+
+    @PostMapping("/verify-login-otp")
+    public String verifyLoginOtp(
+            @RequestBody VerifyOtpRequest request
+    ) {
+
+        return authService.verifyLoginOtp(
+                request
+        );
+    }
 }
