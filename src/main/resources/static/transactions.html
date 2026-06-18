@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a56db">
+    <title>Transactions — PaySim</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-container page page-app">
+    <header class="screen-header">
+        <a href="dashboard.html" class="btn-icon" aria-label="Go back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </a>
+        <h2>Transactions</h2>
+        <span class="header-spacer"></span>
+    </header>
+
+    <div class="history-toolbar">
+        <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="txnSearch" placeholder="Search by name or UPI ID…" autocomplete="off">
+        </div>
+        <div class="filter-chips">
+            <button type="button" class="filter-chip active" data-filter="all">All</button>
+            <button type="button" class="filter-chip" data-filter="sent">Sent</button>
+            <button type="button" class="filter-chip" data-filter="received">Received</button>
+        </div>
+    </div>
+
+    <div id="txnList" class="txn-list"></div>
+    <div id="txnEmpty" class="empty-state">
+        <div class="empty-icon">📋</div>
+        <strong>No transactions yet</strong>
+        <span>Your payment history will appear here</span>
+    </div>
+    <div id="txnLoading" class="loading-state hidden">Loading transactions…</div>
+</div>
+
+<nav id="bottomNav" class="bottom-nav"></nav>
+<div id="loadingOverlay" class="loading-overlay hidden"><div class="spinner"></div></div>
+<div id="toastRoot" class="toast-root"></div>
+<script src="js/common.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/transactions.js"></script>
+</body>
+</html>
