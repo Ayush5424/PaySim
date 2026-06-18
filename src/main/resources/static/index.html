@@ -2,431 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#1a73e8">
-    <title>UPI Simulation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a56db">
+    <title>PaySim — UPI Simulation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-
-<div class="app-shell">
-
-    <header class="topbar">
-        <a class="brand" href="#home">
-            <span class="brand-mark">UPI</span>
-            <span>
-                <strong>UPI Simulation</strong>
-                <small>Spring Boot Payments</small>
-            </span>
-        </a>
-
-        <nav class="desktop-nav">
-            <a href="#create">Create</a>
-            <a href="#balance">Balance</a>
-            <a href="#payment">Pay</a>
-            <a href="#history">History</a>
-        </nav>
-    </header>
-
-    <main>
-
-        <section id="home" class="dashboard-grid">
-            <article class="welcome-card">
-                <div>
-                    <p class="eyebrow">Welcome back</p>
-                    <h1>UPI Payments made simple.</h1>
-                    <p class="welcome-copy">
-                        Create users, send money via QR or phone number,
-                        check balances and view transaction history.
-                    </p>
-                </div>
-
-                <div class="hero-balance-card">
-                    <span>Balance Preview</span>
-                    <strong id="dashboardBalance">--</strong>
-                    <small id="dashboardUpi">
-                        Enter UPI ID to preview balance
-                    </small>
-                </div>
-            </article>
-
-            <aside class="profile-card">
-                <div class="card-heading">
-                    <div>
-                        <p class="eyebrow">UPI Profile</p>
-                        <h2 id="profileName">No profile loaded</h2>
-                    </div>
-                </div>
-
-                <dl class="profile-list">
-                    <div>
-                        <dt>UPI ID</dt>
-                        <dd id="profileUpi">--</dd>
-                    </div>
-
-                    <div>
-                        <dt>Phone</dt>
-                        <dd id="profilePhone">--</dd>
-                    </div>
-                </dl>
-            </aside>
-
-            <section class="quick-actions">
-                <a class="action-tile" href="#create">
-                    <span class="action-icon">+</span>
-                    <strong>Create User</strong>
-                </a>
-
-                <a class="action-tile" href="#balance">
-                    <span class="action-icon">₹</span>
-                    <strong>Check Balance</strong>
-                </a>
-
-                <a class="action-tile" href="#payment">
-                    <span class="action-icon">→</span>
-                    <strong>Send Money</strong>
-                </a>
-
-                <a class="action-tile" href="#history">
-                    <span class="action-icon">↻</span>
-                    <strong>Transactions</strong>
-                </a>
-            </section>
-        </section>
-
-        <section class="content-grid">
-
-            <!-- CREATE USER -->
-            <article id="create" class="panel">
-
-                <div class="section-title">
-                    <div>
-                        <p class="eyebrow">Create User</p>
-                        <h2>Register a UPI profile</h2>
-                    </div>
-                </div>
-
-                <form id="createUserForm" class="form-card">
-
-                    <label>Name</label>
-                    <input
-                            id="name"
-                            name="name"
-                            type="text"
-                            placeholder="Enter full name"
-                            required
-                    >
-
-                    <label>Phone Number</label>
-                    <input
-                            id="phoneNumber"
-                            name="phoneNumber"
-                            type="text"
-                            placeholder="Enter phone number"
-                            required
-                    >
-
-                    <button
-                            id="createUserBtn"
-                            class="primary-btn"
-                            type="submit"
-                    >
-                        Create User
-                    </button>
-                </form>
-
-                <div
-                        id="createdUserCard"
-                        class="result-card hidden"
-                ></div>
-
-            </article>
-
-            <!-- BALANCE -->
-            <article id="balance" class="panel">
-
-                <div class="section-title">
-                    <div>
-                        <p class="eyebrow">Balance</p>
-                        <h2>Check balance</h2>
-                    </div>
-                </div>
-
-                <form id="balanceForm" class="form-card">
-
-                    <label>UPI ID</label>
-
-                    <input
-                            id="balanceUpi"
-                            name="upiId"
-                            type="text"
-                            placeholder="name@okbank"
-                            required
-                    >
-
-                    <button
-                            id="balanceBtn"
-                            class="primary-btn"
-                            type="submit"
-                    >
-                        Check Balance
-                    </button>
-                </form>
-
-                <div class="balance-output">
-                    <span>Current Balance</span>
-                    <strong id="balanceAmount">--</strong>
-                </div>
-
-            </article>
-
-            <!-- PAYMENT -->
-            <article id="payment" class="panel panel-wide">
-
-                <div class="section-title">
-                    <div>
-                        <p class="eyebrow">Send Money</p>
-                        <h2>Choose payment method</h2>
-                    </div>
-                </div>
-
-                <!-- PAYMENT METHOD -->
-                <div class="payment-method-selector">
-
-                    <button
-                            type="button"
-                            class="method-btn active"
-                            id="phoneMethodBtn"
-                    >
-                        Pay by Phone Number
-                    </button>
-
-                    <button
-                            type="button"
-                            class="method-btn"
-                            id="qrMethodBtn"
-                    >
-                        Pay by QR
-                    </button>
-
-                </div>
-
-                <!-- PHONE PAYMENT -->
-                <div id="phonePaymentSection">
-
-                    <form
-                            id="paymentForm"
-                            class="form-card payment-grid"
-                    >
-
-                        <div>
-                            <label>From UPI</label>
-                            <input
-                                    id="fromUpi"
-                                    name="fromUpi"
-                                    type="text"
-                                    placeholder="your@okbank"
-                                    required
-                            >
-                        </div>
-
-                        <div>
-                            <label>Receiver Phone Number</label>
-                            <input
-                                    id="receiverPhone"
-                                    name="receiverPhone"
-                                    type="text"
-                                    placeholder="9876543210"
-                                    required
-                            >
-                        </div>
-
-                        <div>
-                            <label>Amount</label>
-                            <input
-                                    id="amount"
-                                    name="amount"
-                                    type="number"
-                                    placeholder="0.00"
-                                    required
-                            >
-                        </div>
-
-                        <button
-                                class="primary-btn payment-button"
-                                type="submit"
-                        >
-                            Continue
-                        </button>
-
-                    </form>
-                </div>
-
-                <!-- QR PAYMENT -->
-                <div
-                        id="qrPaymentSection"
-                        class="hidden"
-                >
-
-                    <div class="qr-container">
-
-                        <div class="qr-placeholder">
-                            📷
-                        </div>
-
-                        <h3>Scan QR</h3>
-
-                        <p>
-                            Scan another user's QR code
-                            to continue payment
-                        </p>
-
-                        <button
-                                id="scanQrBtn"
-                                class="primary-btn"
-                                type="button"
-                        >
-                            Simulate QR Scan
-                        </button>
-
-                    </div>
-
-                </div>
-
-                <!-- RECEIVER PREVIEW -->
-                <div
-                        id="receiverCard"
-                        class="receiver-card hidden"
-                >
-
-                    <span>Paying To</span>
-
-                    <h3 id="receiverName">
-                        --
-                    </h3>
-
-                    <small id="receiverUpi">
-                        --
-                    </small>
-
-                </div>
-
-                <!-- PIN SCREEN -->
-                <div
-                        id="paymentConfirmation"
-                        class="confirmation-card hidden"
-                >
-
-                    <h3>Confirm Payment</h3>
-
-                    <div class="payment-summary">
-
-                        <p>Recipient</p>
-                        <strong id="confirmReceiver">
-                            --
-                        </strong>
-
-                        <p>Amount</p>
-                        <strong id="confirmAmount">
-                            ₹0
-                        </strong>
-
-                    </div>
-
-                    <label>Enter PIN</label>
-
-                    <input
-                            id="confirmPin"
-                            type="password"
-                            placeholder="Enter PIN"
-                    >
-
-                    <button
-                            id="payNowBtn"
-                            class="primary-btn"
-                            type="button"
-                    >
-                        Pay Now
-                    </button>
-
-                </div>
-
-                <div
-                        id="paymentResult"
-                        class="payment-result hidden"
-                ></div>
-
-            </article>
-
-            <!-- TRANSACTIONS -->
-            <article
-                    id="history"
-                    class="panel panel-wide"
-            >
-
-                <div class="section-title">
-                    <div>
-                        <p class="eyebrow">
-                            Transaction History
-                        </p>
-
-                        <h2>View activity</h2>
-                    </div>
-                </div>
-
-                <form
-                        id="transactionsForm"
-                        class="form-card"
-                >
-
-                    <label>UPI ID</label>
-
-                    <input
-                            id="transactionsUpi"
-                            name="upiId"
-                            type="text"
-                            placeholder="name@okbank"
-                            required
-                    >
-
-                    <button
-                            class="primary-btn"
-                            type="submit"
-                    >
-                        Fetch History
-                    </button>
-
-                </form>
-
-                <div
-                        id="transactionsState"
-                        class="empty-state"
-                >
-                    <strong>
-                        No transactions loaded
-                    </strong>
-
-                    <span>
-                        Enter UPI ID to fetch history
-                    </span>
-                </div>
-
-                <div
-                        id="transactionsList"
-                        class="transactions-list"
-                ></div>
-
-            </article>
-
-        </section>
-
-    </main>
-
+<body class="page-auth-body">
+
+<div class="ambient-bg" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+
+<div class="app-container page page-auth">
+    <div class="auth-content">
+        <div class="brand-hero">
+            <div class="brand-logo">
+                <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                    <rect width="48" height="48" rx="14" fill="url(#logoGrad)"/>
+                    <path d="M14 24h20M24 14v20" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0" y1="0" x2="48" y2="48">
+                            <stop stop-color="#2563eb"/><stop offset="1" stop-color="#7c3aed"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <h1 class="brand-title">PaySim</h1>
+            <p class="brand-tagline">Fast, secure UPI payments — simulated for learning</p>
+        </div>
+
+        <div class="welcome-features">
+            <div class="feature-chip"><span class="feature-icon">⚡</span><span>Instant transfers</span></div>
+            <div class="feature-chip"><span class="feature-icon">🔒</span><span>OTP secured</span></div>
+            <div class="feature-chip"><span class="feature-icon">📱</span><span>QR &amp; phone pay</span></div>
+        </div>
+
+        <div class="auth-actions">
+            <a href="login.html" class="btn btn-primary btn-lg">Log In</a>
+            <a href="signup.html" class="btn btn-glass btn-lg">Create Account</a>
+        </div>
+
+        <p class="auth-footer-note">Simulation only — no real money involved</p>
+    </div>
 </div>
 
 <div id="toastRoot" class="toast-root"></div>
-
-<script src="app.js"></script>
-
+<script src="js/common.js"></script>
+<script>
+    redirectIfAuthed("dashboard.html");
+</script>
 </body>
 </html>

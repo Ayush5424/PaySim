@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a56db">
+    <title>Dashboard — PaySim</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-container page page-app page-dashboard">
+    <header class="dash-header">
+        <div class="dash-greeting">
+            <span class="greeting-label">Good day,</span>
+            <h1 id="dashUserName">User</h1>
+        </div>
+        <a href="profile.html" class="avatar-btn" aria-label="Open profile">
+            <span id="dashAvatarInitial">U</span>
+        </a>
+    </header>
+
+    <div class="balance-hero glass-card">
+        <div class="balance-hero-top">
+            <span>Available Balance</span>
+            <button type="button" class="btn-icon-sm" id="toggleBalanceVisibility" aria-label="Toggle balance visibility">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+        </div>
+        <div class="balance-amount" id="dashBalance">₹0.00</div>
+        <div class="upi-badge">
+            <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg>
+            <span id="dashUpiId">—</span>
+        </div>
+    </div>
+
+    <div class="section-label">Quick Actions</div>
+    <div class="quick-actions-grid">
+        <a href="pay-qr.html" class="action-card">
+            <div class="action-icon action-icon-qr">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+            </div>
+            <span>Scan &amp; Pay</span>
+        </a>
+        <a href="pay-phone.html" class="action-card">
+            <div class="action-icon action-icon-phone">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            </div>
+            <span>Pay Phone</span>
+        </a>
+        <a href="balance.html" class="action-card">
+            <div class="action-icon action-icon-balance">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </div>
+            <span>Balance</span>
+        </a>
+        <a href="transactions.html" class="action-card">
+            <div class="action-icon action-icon-history">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <span>History</span>
+        </a>
+        <a href="profile.html" class="action-card">
+            <div class="action-icon action-icon-profile">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <span>Profile</span>
+        </a>
+    </div>
+
+    <div class="section-label">Recent Activity</div>
+    <div id="dashRecentTxns" class="recent-txn-list">
+        <div class="empty-mini">No recent transactions</div>
+    </div>
+</div>
+
+<nav id="bottomNav" class="bottom-nav"></nav>
+<div id="loadingOverlay" class="loading-overlay hidden"><div class="spinner"></div></div>
+<div id="toastRoot" class="toast-root"></div>
+<script src="js/common.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

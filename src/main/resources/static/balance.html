@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a56db">
+    <title>Balance — PaySim</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-container page page-app">
+    <header class="screen-header">
+        <a href="dashboard.html" class="btn-icon" aria-label="Go back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </a>
+        <h2>Balance</h2>
+        <span class="header-spacer"></span>
+    </header>
+
+    <div class="balance-screen">
+        <div class="balance-card-large glass-card">
+            <span class="label-sm">Available Balance</span>
+            <div class="balance-amount-large" id="balanceScreenAmount">₹0.00</div>
+            <div class="upi-badge">
+                <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg>
+                <span id="balanceScreenUpi">—</span>
+            </div>
+        </div>
+        <button type="button" id="refreshBalanceBtn" class="btn btn-glass btn-block">Refresh Balance</button>
+        <div class="info-card">
+            <p>Balance updates instantly after every successful transaction.</p>
+        </div>
+    </div>
+</div>
+
+<nav id="bottomNav" class="bottom-nav"></nav>
+<div id="loadingOverlay" class="loading-overlay hidden"><div class="spinner"></div></div>
+<div id="toastRoot" class="toast-root"></div>
+<script src="js/common.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/balance.js"></script>
+</body>
+</html>

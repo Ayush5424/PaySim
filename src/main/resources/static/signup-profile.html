@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a56db">
+    <title>Create Profile — PaySim</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-auth-body">
+
+<div class="ambient-bg" aria-hidden="true"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+
+<div class="app-container page page-auth">
+    <header class="screen-header">
+        <a href="signup-otp.html" class="btn-icon" aria-label="Go back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </a>
+        <h2>Create Profile</h2>
+        <span class="header-spacer"></span>
+    </header>
+
+    <div class="auth-content">
+        <p class="screen-subtitle">Set up your UPI identity</p>
+        <form id="signupProfileForm" class="form-stack">
+            <div class="input-group">
+                <label for="signupName">Full Name</label>
+                <input id="signupName" name="name" type="text" placeholder="Your name" required autocomplete="name">
+            </div>
+            <div class="input-group">
+                <label for="signupPin">Create UPI PIN</label>
+                <input id="signupPin" name="pin" type="password" inputmode="numeric" maxlength="6" placeholder="4–6 digit PIN" required autocomplete="new-password">
+                <small class="input-hint">You'll use this PIN to authorize payments</small>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Create Account</button>
+        </form>
+    </div>
+</div>
+
+<div id="loadingOverlay" class="loading-overlay hidden"><div class="spinner"></div></div>
+<div id="toastRoot" class="toast-root"></div>
+<script src="js/common.js"></script>
+<script src="js/signup-profile.js"></script>
+</body>
+</html>
