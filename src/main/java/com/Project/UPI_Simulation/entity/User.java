@@ -24,4 +24,7 @@ public class User {
     @Column(nullable = false)
     private String pin;
 
+    @Column(nullable = false)
+    private boolean verified;
+
 }
