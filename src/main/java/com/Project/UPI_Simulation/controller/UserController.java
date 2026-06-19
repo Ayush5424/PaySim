@@ -1,7 +1,9 @@
 package com.Project.UPI_Simulation.controller;
 
 import com.Project.UPI_Simulation.dto.ApiResponse;
+import com.Project.UPI_Simulation.dto.BalanceRequest;
 import com.Project.UPI_Simulation.dto.PaymentRequest;
+import com.Project.UPI_Simulation.dto.ProfileUpdateRequest;
 import com.Project.UPI_Simulation.entity.Transaction;
 import com.Project.UPI_Simulation.entity.User;
 import com.Project.UPI_Simulation.service.PaymentService;
@@ -53,6 +55,15 @@ public class UserController {
 
     }
 
+    @PostMapping("/balance")
+    public ApiResponse<BigDecimal> getBalanceWithPin(@RequestBody BalanceRequest request){
+        return new ApiResponse<>(
+                "SUCCESS",
+                "Balance fetched",
+                userService.getBalance(request.getUpiId(), request.getPin())
+        );
+    }
+
 
 
     @GetMapping("/transactions/{upiId}")
@@ -66,6 +77,27 @@ public class UserController {
 
     @GetMapping("/phone/{phoneNumber}")
     public ApiResponse<User> getUserByPhone(@PathVariable String phoneNumber){
-        return new ApiResponse<>("SUCCESS","User Foundeer", userService.getUserByPhone(phoneNumber));
+        return new ApiResponse<>("SUCCESS","User Found", userService.getUserByPhone(phoneNumber));
+    }
+
+    @PutMapping("/profile/{phoneNumber}")
+    public ApiResponse<User> updateProfile(
+            @PathVariable String phoneNumber,
+            @RequestBody ProfileUpdateRequest request
+    ){
+        return new ApiResponse<>(
+                "SUCCESS",
+                "Profile updated",
+                userService.updateProfile(phoneNumber, request)
+        );
+    }
+
+    @DeleteMapping("/profile/{phoneNumber}/photo")
+    public ApiResponse<User> removeProfilePhoto(@PathVariable String phoneNumber){
+        return new ApiResponse<>(
+                "SUCCESS",
+                "Profile photo removed",
+                userService.removeProfilePhoto(phoneNumber)
+        );
     }
 }

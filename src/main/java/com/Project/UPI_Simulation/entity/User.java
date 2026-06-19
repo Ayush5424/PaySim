@@ -15,6 +15,12 @@ public class User {
     private Long id;
     private String name;
 
+    private String displayName;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String profilePhoto;
+
     @Column(unique = true, nullable = false)
     private String phoneNumber;
 

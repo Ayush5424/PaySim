@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#1a56db">
+    <meta name="theme-color" content="#123b3b">
     <title>Balance — PaySim</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -19,7 +19,26 @@
         <span class="header-spacer"></span>
     </header>
 
-    <div class="balance-screen">
+    <!-- PIN gate -->
+    <div id="balancePinGate" class="balance-pin-gate">
+        <div class="pin-lock-icon">🔒</div>
+        <h3>Enter UPI PIN</h3>
+        <p class="screen-subtitle">Enter your correct PIN to view account balance</p>
+        <div class="pin-dots" id="balancePinDots">
+            <span></span><span></span><span></span><span></span>
+        </div>
+        <input type="password" id="balancePinInput" class="pin-hidden-input" inputmode="numeric" maxlength="6" autocomplete="off">
+        <div class="pin-keypad" data-pin-target="balancePinInput" data-pin-action="verify">
+            <button type="button" data-key="1">1</button><button type="button" data-key="2">2</button><button type="button" data-key="3">3</button>
+            <button type="button" data-key="4">4</button><button type="button" data-key="5">5</button><button type="button" data-key="6">6</button>
+            <button type="button" data-key="7">7</button><button type="button" data-key="8">8</button><button type="button" data-key="9">9</button>
+            <button type="button" data-key="clear" class="key-clear">⌫</button><button type="button" data-key="0">0</button>
+            <button type="button" data-key="pay" class="key-pay">View</button>
+        </div>
+    </div>
+
+    <!-- Balance content (hidden until PIN verified) -->
+    <div id="balanceContent" class="balance-screen hidden">
         <div class="balance-card-large glass-card">
             <span class="label-sm">Available Balance</span>
             <div class="balance-amount-large" id="balanceScreenAmount">₹0.00</div>
@@ -29,8 +48,9 @@
             </div>
         </div>
         <button type="button" id="refreshBalanceBtn" class="btn btn-glass btn-block">Refresh Balance</button>
+        <button type="button" id="lockBalanceBtn" class="btn btn-text btn-block">Lock balance</button>
         <div class="info-card">
-            <p>Balance updates instantly after every successful transaction.</p>
+            <p>Balance is protected by your UPI PIN and updates after every transaction.</p>
         </div>
     </div>
 </div>

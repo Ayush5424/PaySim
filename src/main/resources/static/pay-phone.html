@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#1a56db">
-    <title>Pay by Phone — PaySim</title>
+    <meta name="theme-color" content="#123b3b">
+    <title>Pay — PaySim</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -15,26 +15,58 @@
         <a href="dashboard.html" class="btn-icon" aria-label="Go back">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
         </a>
-        <h2>Pay by Phone</h2>
+        <h2>Pay</h2>
         <span class="header-spacer"></span>
     </header>
 
-    <p class="screen-subtitle">Enter receiver's mobile number</p>
-    <form id="phoneLookupForm" class="form-stack">
-        <div class="input-group">
-            <label for="receiverPhoneInput">Mobile Number</label>
-            <div class="phone-input-wrap">
-                <span class="phone-prefix">+91</span>
-                <input id="receiverPhoneInput" type="tel" inputmode="numeric" maxlength="10" placeholder="9876543210" required>
+    <div class="pay-method-tabs">
+        <button type="button" class="pay-tab active" data-tab="phone">Pay by Phone</button>
+        <button type="button" class="pay-tab" data-tab="qr">Pay by QR</button>
+    </div>
+
+    <!-- Pay by Phone -->
+    <div id="payTabPhone" class="pay-tab-panel active">
+        <p class="screen-subtitle">Enter receiver's mobile number</p>
+        <form id="phoneLookupForm" class="form-stack">
+            <div class="input-group">
+                <label for="receiverPhoneInput">Mobile Number</label>
+                <div class="phone-input-wrap">
+                    <span class="phone-prefix">+91</span>
+                    <input id="receiverPhoneInput" type="tel" inputmode="numeric" maxlength="10" placeholder="9876543210" required>
+                </div>
             </div>
-        </div>
-        <button type="submit" class="btn btn-primary btn-lg btn-block">Find Contact</button>
-    </form>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Find Contact</button>
+        </form>
+    </div>
+
+    <!-- Pay by QR -->
+    <div id="payTabQr" class="pay-tab-panel">
+        <p class="screen-subtitle">Scan a UPI QR code or pick from gallery</p>
+        <a href="pay-qr.html" class="btn btn-primary btn-lg btn-block pay-qr-launch">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Open Camera Scanner
+        </a>
+        <button type="button" id="galleryQrFromPay" class="btn btn-glass btn-block">Scan QR from Gallery</button>
+        <button type="button" id="manualQrFromPay" class="btn btn-text btn-block">Enter UPI ID</button>
+        <form id="manualPayUpiForm" class="manual-upi-panel hidden">
+            <div class="input-group">
+                <label for="manualPayUpiInput">UPI ID</label>
+                <input id="manualPayUpiInput" type="text" placeholder="name1234@upi" autocomplete="off">
+            </div>
+            <div class="manual-upi-actions">
+                <button type="button" id="cancelManualPayUpi" class="btn btn-text">Cancel</button>
+                <button type="submit" class="btn btn-primary">Continue</button>
+            </div>
+        </form>
+        <input type="file" id="galleryQrInput" accept="image/*" class="hidden">
+        <div id="qrFileHelper" class="hidden" aria-hidden="true"></div>
+    </div>
 </div>
 
 <nav id="bottomNav" class="bottom-nav"></nav>
 <div id="loadingOverlay" class="loading-overlay hidden"><div class="spinner"></div></div>
 <div id="toastRoot" class="toast-root"></div>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="js/common.js"></script>
 <script src="js/layout.js"></script>
 <script src="js/pay-phone.js"></script>

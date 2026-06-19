@@ -1,5 +1,7 @@
 package com.Project.UPI_Simulation.controller;
 
+import com.Project.UPI_Simulation.dto.ApiResponse;
+import com.Project.UPI_Simulation.dto.QrPayloadResponse;
 import com.Project.UPI_Simulation.service.QRService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -24,5 +26,14 @@ public class QRController {
         byte[] qr = qrService.generateUserQR(upiId);
 
         return ResponseEntity.ok(qr);
+    }
+
+    @GetMapping("/qr/{upiId}/payload")
+    public ApiResponse<QrPayloadResponse> getQrPayload(@PathVariable String upiId) {
+        return new ApiResponse<>(
+                "SUCCESS",
+                "QR payload fetched",
+                qrService.getUserQrDetails(upiId)
+        );
     }
 }

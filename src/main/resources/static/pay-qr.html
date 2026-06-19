@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#1a56db">
+    <meta name="theme-color" content="#123b3b">
     <title>Scan &amp; Pay — PaySim</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,8 +20,26 @@
     </header>
 
     <div id="qrReader" class="qr-scanner"></div>
-    <p class="scanner-hint">Point your camera at a UPI QR code</p>
-    <button type="button" id="manualQrBtn" class="btn btn-glass btn-block">Enter UPI ID manually</button>
+    <p class="scanner-hint" id="scannerStatus">Starting camera scanner…</p>
+
+    <div class="scanner-actions">
+        <button type="button" id="galleryQrBtn" class="btn btn-primary btn-block">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            Scan from Gallery
+        </button>
+        <button type="button" id="manualQrBtn" class="btn btn-glass btn-block">Enter UPI ID</button>
+    </div>
+    <form id="manualUpiForm" class="manual-upi-panel hidden">
+        <div class="input-group">
+            <label for="manualUpiInput">UPI ID</label>
+            <input id="manualUpiInput" type="text" placeholder="name1234@upi" autocomplete="off">
+        </div>
+        <div class="manual-upi-actions">
+            <button type="button" id="cancelManualUpi" class="btn btn-text">Cancel</button>
+            <button type="submit" class="btn btn-primary">Continue</button>
+        </div>
+    </form>
+    <input type="file" id="galleryQrFile" accept="image/*" class="hidden">
 </div>
 
 <nav id="bottomNav" class="bottom-nav"></nav>

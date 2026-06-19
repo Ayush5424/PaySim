@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     List<Transaction> findBySenderUpiOrReceiverUpi(String sender, String receiver);
+    List<Transaction> findBySenderUpiOrReceiverUpiOrderByIdDesc(String sender, String receiver);
 }

@@ -89,6 +89,6 @@ public class PaymentService {
     }
 
     public List<Transaction> getTransactions(String upiId) {
-        return txnRepo.findBySenderUpiOrReceiverUpi(upiId, upiId);
+        return txnRepo.findBySenderUpiOrReceiverUpiOrderByIdDesc(upiId, upiId);
     }
 }
