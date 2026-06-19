@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             const user = result.upiId ? result : result.data;
-            setSession(user);
+            setSession({ ...user, pin });
             clearAuthFlow();
             showToast(`Welcome! Your UPI ID: ${user.upiId}`, "success");
             window.location.href = "dashboard.html";

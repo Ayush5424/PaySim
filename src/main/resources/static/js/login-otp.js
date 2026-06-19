@@ -26,7 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             const userResponse = await requestJson(API.user.byPhone(flow.phoneNumber));
-            setSession(userResponse.data);
+            const user = userResponse.data;
+            setSession({
+                ...user,
+                pin: user.pin || null
+            });
             clearAuthFlow();
             window.location.href = "dashboard.html";
         } catch (err) {

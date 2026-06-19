@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#1a56db">
+    <meta name="theme-color" content="#123b3b">
     <title>Profile — PaySim</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -21,9 +21,25 @@
 
     <div class="profile-screen">
         <div class="profile-hero glass-card">
-            <div class="profile-avatar-lg" id="profileAvatar">U</div>
+            <div class="profile-avatar-wrap">
+                <div class="profile-avatar-lg" id="profileAvatar">U</div>
+                <label class="avatar-edit-btn" for="photoInput" title="Change photo">📷</label>
+            </div>
+            <input type="file" id="photoInput" accept="image/*" class="hidden">
             <h3 id="profileName">—</h3>
             <span class="status-badge verified" id="profileStatus">Verified</span>
+            <div class="profile-photo-actions">
+                <label for="photoInput" class="btn btn-glass btn-sm">Add from Gallery</label>
+                <button type="button" id="removePhotoBtn" class="btn btn-text btn-sm hidden">Remove Photo</button>
+            </div>
+        </div>
+
+        <div class="profile-edit-card glass-card">
+            <div class="input-group">
+                <label for="editNameInput">Display Name</label>
+                <input id="editNameInput" type="text" placeholder="Your name">
+            </div>
+            <button type="button" id="saveNameBtn" class="btn btn-primary btn-block">Save Name</button>
         </div>
 
         <div class="profile-details glass-card">
@@ -38,13 +54,17 @@
         </div>
 
         <div class="qr-display glass-card">
-            <span class="label-sm">My QR Code</span>
+            <span class="label-sm">My UPI QR Code</span>
+            <p class="qr-hint">Unique QR generated for your UPI ID</p>
             <div class="qr-image-wrap">
+                <canvas id="profileQrCanvas" class="hidden"></canvas>
                 <img id="profileQrImage" src="" alt="Your UPI QR code" class="hidden">
                 <div id="profileQrPlaceholder" class="qr-placeholder-box">
-                    <span>QR unavailable</span>
+                    <span>Generating QR…</span>
                 </div>
             </div>
+            <button type="button" id="regenerateQrBtn" class="btn btn-glass btn-block">Regenerate QR</button>
+            <button type="button" id="downloadQrBtn" class="btn btn-primary btn-block hidden">Download QR</button>
         </div>
 
         <button type="button" id="logoutBtn" class="btn btn-danger btn-block">Log Out</button>
@@ -53,6 +73,7 @@
 
 <nav id="bottomNav" class="bottom-nav"></nav>
 <div id="toastRoot" class="toast-root"></div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script src="js/common.js"></script>
 <script src="js/layout.js"></script>
 <script src="js/profile.js"></script>

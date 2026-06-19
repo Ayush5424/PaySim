@@ -1,18 +1,24 @@
 package com.Project.UPI_Simulation.auth;
 
 import com.Project.UPI_Simulation.repository.UserRepository;
+import com.Project.UPI_Simulation.repository.AccountRepository;
 import com.Project.UPI_Simulation.service.OtpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.Project.UPI_Simulation.entity.Account;
 import com.Project.UPI_Simulation.entity.User;
 
+import java.math.BigDecimal;
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final OtpService otpService;
 
     public String sendSignupOtp(SignupRequest request){
@@ -46,6 +52,7 @@ public class AuthService {
         return "OTP verified successfully";
     }
 
+    @Transactional
     public User createProfile(CreateProfileRequest request){
         if(!otpService.isPhoneVerified(request.getPhoneNumber())){
             throw new RuntimeException("Phone number not verified");
@@ -54,6 +61,7 @@ public class AuthService {
         User user = new User();
 
         user.setName(request.getName());
+        user.setDisplayName(request.getName());
         user.setPhoneNumber(request.getPhoneNumber());
         user.setPin(request.getPin());
         user.setVerified(
@@ -75,6 +83,14 @@ public class AuthService {
 
         User savedUser =
                 userRepository.save(user);
+
+        Account account = new Account();
+        account.setUser(savedUser);
+        account.setAccountNumber(UUID.randomUUID().toString());
+        account.setBalance(BigDecimal.ZERO);
+        account.setPin(request.getPin());
+
+        accountRepository.save(account);
 
         otpService.clearVerification(
                 request.getPhoneNumber()

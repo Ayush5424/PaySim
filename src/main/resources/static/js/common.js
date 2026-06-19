@@ -14,23 +14,88 @@ const API = {
     },
     user: {
         balance: (upiId) => `${API_BASE}/api/user/balance/${encodeURIComponent(upiId)}`,
+        balanceWithPin: `${API_BASE}/api/user/balance`,
         transactions: (upiId) => `${API_BASE}/api/user/transactions/${encodeURIComponent(upiId)}`,
-        byPhone: (phone) => `${API_BASE}/api/user/phone/${encodeURIComponent(phone)}`
+        byPhone: (phone) => `${API_BASE}/api/user/phone/${encodeURIComponent(phone)}`,
+        updateProfile: (phone) => `${API_BASE}/api/user/profile/${encodeURIComponent(phone)}`,
+        removePhoto: (phone) => `${API_BASE}/api/user/profile/${encodeURIComponent(phone)}/photo`
     },
     payment: {
         send: `${API_BASE}/api/payment/send`,
-        qr: (upiId) => `${API_BASE}/api/payment/qr/${encodeURIComponent(upiId)}`
+        qr: (upiId) => `${API_BASE}/api/payment/qr/${encodeURIComponent(upiId)}`,
+        qrPayload: (upiId) => `${API_BASE}/api/payment/qr/${encodeURIComponent(upiId)}/payload`
     }
 };
 
 const SESSION_KEY = "paysim_session";
 const AUTH_FLOW_KEY = "paysim_auth_flow";
 const PAYMENT_KEY = "paysim_payment";
+const PROFILE_PREFIX = "paysim_profile_";
+const BALANCE_UNLOCK_KEY = "paysim_balance_unlocked";
+const THEME_KEY = "paysim_theme";
 
 const currencyFormatter = new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR"
 });
+
+initTheme();
+
+document.addEventListener("DOMContentLoaded", () => {
+    mountThemeToggle();
+});
+
+function getPreferredTheme() {
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    if (savedTheme === "light" || savedTheme === "dark") return savedTheme;
+    return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function initTheme() {
+    applyTheme(getPreferredTheme());
+}
+
+function applyTheme(theme) {
+    const nextTheme = theme === "dark" ? "dark" : "light";
+    document.documentElement.dataset.theme = nextTheme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute(
+        "content",
+        nextTheme === "dark" ? "#111827" : "#123b3b"
+    );
+    document.querySelectorAll(".theme-toggle").forEach((toggle) => {
+        toggle.setAttribute("aria-checked", String(nextTheme === "dark"));
+        toggle.querySelector(".theme-toggle-text").textContent = nextTheme === "dark" ? "Dark" : "Light";
+    });
+}
+
+function setTheme(theme) {
+    localStorage.setItem(THEME_KEY, theme);
+    applyTheme(theme);
+}
+
+function mountThemeToggle() {
+    if (document.querySelector(".theme-toggle")) return;
+
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "theme-toggle";
+    toggle.setAttribute("role", "switch");
+    toggle.setAttribute("aria-label", "Toggle dark mode");
+    toggle.innerHTML = `
+        <span class="theme-toggle-track" aria-hidden="true">
+            <span class="theme-toggle-thumb"></span>
+        </span>
+        <span class="theme-toggle-text"></span>
+    `;
+
+    toggle.addEventListener("click", () => {
+        const currentTheme = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+        setTheme(currentTheme === "dark" ? "light" : "dark");
+    });
+
+    document.body.appendChild(toggle);
+    applyTheme(getPreferredTheme());
+}
 
 function getSession() {
     try {
@@ -41,18 +106,118 @@ function getSession() {
 }
 
 function setSession(user) {
+    const existing = getSession() || {};
     const session = {
-        name: user.name,
-        phoneNumber: user.phoneNumber,
-        upiId: user.upiId,
-        verified: user.verified ?? true
+        name: user.name || existing.name,
+        displayName: user.displayName || user.name || existing.displayName,
+        phoneNumber: user.phoneNumber || existing.phoneNumber,
+        upiId: user.upiId || existing.upiId,
+        verified: user.verified ?? existing.verified ?? true,
+        pin: user.pin ?? existing.pin ?? null
     };
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    if (session.phoneNumber && (user.displayName || user.name || user.profilePhoto)) {
+        setProfileData(session.phoneNumber, {
+            displayName: user.displayName || user.name || session.displayName,
+            photo: user.profilePhoto || getProfilePhoto(session.phoneNumber)
+        });
+    }
+    return session;
+}
+
+function updateSession(fields) {
+    const session = { ...getSession(), ...fields };
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
     return session;
 }
 
+function getDisplayName() {
+    const session = getSession();
+    if (!session) return "User";
+    const profile = getProfileData(session.phoneNumber);
+    return profile.displayName || session.displayName || session.name || "User";
+}
+
+function getProfileData(phoneNumber) {
+    if (!phoneNumber) return {};
+    try {
+        return JSON.parse(localStorage.getItem(PROFILE_PREFIX + phoneNumber)) || {};
+    } catch {
+        return {};
+    }
+}
+
+function setProfileData(phoneNumber, data) {
+    const merged = { ...getProfileData(phoneNumber), ...data };
+    localStorage.setItem(PROFILE_PREFIX + phoneNumber, JSON.stringify(merged));
+    return merged;
+}
+
+function getProfilePhoto(phoneNumber) {
+    return getProfileData(phoneNumber).photo || null;
+}
+
+function applyAvatar(el, phoneNumber, fallbackName) {
+    if (!el) return;
+    const photo = getProfilePhoto(phoneNumber);
+    const name = fallbackName || getDisplayName();
+    if (photo) {
+        el.innerHTML = `<img src="${photo}" alt="Profile" class="avatar-img">`;
+        el.classList.add("has-photo");
+    } else {
+        el.textContent = (name || "U").charAt(0).toUpperCase();
+        el.classList.remove("has-photo");
+    }
+}
+
+function verifyUserPin(pin) {
+    const session = getSession();
+    if (!session?.pin) return false;
+    return String(pin) === String(session.pin);
+}
+
+function isBalanceUnlocked() {
+    return sessionStorage.getItem(BALANCE_UNLOCK_KEY) === "true";
+}
+
+function setBalanceUnlocked(unlocked) {
+    if (unlocked) {
+        sessionStorage.setItem(BALANCE_UNLOCK_KEY, "true");
+    } else {
+        sessionStorage.removeItem(BALANCE_UNLOCK_KEY);
+    }
+}
+
+function buildUpiQrPayload(upiId, name) {
+    const params = new URLSearchParams({
+        pa: upiId,
+        pn: name || upiId.split("@")[0],
+        cu: "INR"
+    });
+    return `upi://pay?${params.toString()}`;
+}
+
+async function renderUpiQr(canvasOrImgId, upiId, name) {
+    const payload = buildUpiQrPayload(upiId, name);
+    const el = document.getElementById(canvasOrImgId);
+    if (!el || typeof QRCode === "undefined") return false;
+
+    try {
+        if (el.tagName === "CANVAS") {
+            await QRCode.toCanvas(el, payload, { width: 200, margin: 2 });
+        } else {
+            const url = await QRCode.toDataURL(payload, { width: 200, margin: 2 });
+            el.src = url;
+        }
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 function clearSession() {
     sessionStorage.removeItem(SESSION_KEY);
+    setBalanceUnlocked(false);
 }
 
 function getAuthFlow() {
@@ -180,6 +345,10 @@ function formatDate(dateStr) {
 
 function isValidPhone(phone) {
     return /^[6-9]\d{9}$/.test(phone);
+}
+
+function isValidUpiId(upiId) {
+    return /^[a-zA-Z0-9._-]{2,256}@[a-zA-Z][a-zA-Z0-9.-]{1,63}$/.test(upiId || "");
 }
 
 function escapeHtml(str) {
