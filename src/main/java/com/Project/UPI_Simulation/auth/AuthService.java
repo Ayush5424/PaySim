@@ -63,13 +63,11 @@ public class AuthService {
         user.setName(request.getName());
         user.setDisplayName(request.getName());
         user.setPhoneNumber(request.getPhoneNumber());
+        user.setEmail(request.getEmail());
         user.setPin(request.getPin());
-        user.setVerified(
-                true
-        );
+        user.setVerified(true);
 
-        String upiId =
-                request.getName()
+        String upiId = request.getName()
                         .toLowerCase()
                         .replaceAll("\\s+", "")
                         +
@@ -77,12 +75,9 @@ public class AuthService {
                         +
                         "@upi";
 
-        user.setUpiId(
-                upiId
-        );
+        user.setUpiId(upiId);
 
-        User savedUser =
-                userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
         Account account = new Account();
         account.setUser(savedUser);

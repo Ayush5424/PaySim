@@ -24,6 +24,9 @@ public class User {
     @Column(unique = true, nullable = false)
     private String phoneNumber;
 
+    @Column(unique = true)
+    private String email;
+
     @Column(unique = true, nullable = false)
     private String upiId;
 

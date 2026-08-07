@@ -7,4 +7,5 @@ public class CreateProfileRequest {
     private String phoneNumber;
     private String name;
     private String pin;
+    private String email;
 }
