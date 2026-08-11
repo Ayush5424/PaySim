@@ -8,7 +8,10 @@ import com.Project.UPI_Simulation.entity.Transaction;
 import com.Project.UPI_Simulation.entity.User;
 import com.Project.UPI_Simulation.service.PaymentService;
 import com.Project.UPI_Simulation.service.UserService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -18,6 +21,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
+@Validated
 public class UserController {
 
     private final UserService userService;
@@ -25,8 +29,11 @@ public class UserController {
 
 
     @PostMapping("/send")
-    public ApiResponse<Map<String, Object>> sendMoney(@RequestBody PaymentRequest request) {
-        Map<String, Object> result = paymentService.sendMoney(request);
+    public ApiResponse<Map<String, Object>> sendMoney(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @Valid @RequestBody PaymentRequest request
+    ) {
+        Map<String, Object> result = paymentService.sendMoney(request, authorizationHeader);
 
         return new ApiResponse<>(
                 "SUCCESS",
@@ -36,7 +43,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ApiResponse<User> createUser(@RequestBody User user){
+    public ApiResponse<User> createUser(@Valid @RequestBody User user){
         return new ApiResponse<>(
                 "SUCCESS",
                 "User created",
@@ -46,7 +53,12 @@ public class UserController {
 
 
     @GetMapping("/balance/{upiId}")
-    public ApiResponse<BigDecimal> getBalance(@PathVariable String upiId){
+    public ApiResponse<BigDecimal> getBalance(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable String upiId
+    ){
+        User currentUser = userService.getCurrentUser(authorizationHeader);
+        userService.requireSameUpi(currentUser, upiId);
         return new ApiResponse<>(
                 "SUCCESS",
                 "Balance fetched",
@@ -56,48 +68,67 @@ public class UserController {
     }
 
     @PostMapping("/balance")
-    public ApiResponse<BigDecimal> getBalanceWithPin(@RequestBody BalanceRequest request){
+    public ApiResponse<BigDecimal> getBalanceWithPin(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @Valid @RequestBody BalanceRequest request
+    ){
         return new ApiResponse<>(
                 "SUCCESS",
                 "Balance fetched",
-                userService.getBalance(request.getUpiId(), request.getPin())
+                userService.getBalanceForCurrentUser(request.getUpiId(), request.getPin(), authorizationHeader)
         );
     }
 
 
 
     @GetMapping("/transactions/{upiId}")
-    public ApiResponse<List<Transaction>> getTransactions(@PathVariable String upiId) {
+    public ApiResponse<List<Transaction>> getTransactions(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable String upiId
+    ) {
         return new ApiResponse<>(
                 "SUCCESS",
                 "Transactions fetched",
-                paymentService.getTransactions(upiId)
+                paymentService.getTransactions(upiId, authorizationHeader)
         );
     }
 
     @GetMapping("/phone/{phoneNumber}")
-    public ApiResponse<User> getUserByPhone(@PathVariable String phoneNumber){
-        return new ApiResponse<>("SUCCESS","User Found", userService.getUserByPhone(phoneNumber));
+    public ApiResponse<User> getUserByPhone(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable @Pattern(regexp = "\\d{10}", message = "Phone number must contain exactly 10 digits") String phoneNumber
+    ){
+        return new ApiResponse<>("SUCCESS","User Found", userService.getUserByPhoneForCurrentUser(phoneNumber, authorizationHeader));
     }
 
     @PutMapping("/profile/{phoneNumber}")
     public ApiResponse<User> updateProfile(
-            @PathVariable String phoneNumber,
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable @Pattern(regexp = "\\d{10}", message = "Phone number must contain exactly 10 digits") String phoneNumber,
             @RequestBody ProfileUpdateRequest request
     ){
         return new ApiResponse<>(
                 "SUCCESS",
                 "Profile updated",
-                userService.updateProfile(phoneNumber, request)
+                userService.updateProfile(phoneNumber, request, authorizationHeader)
         );
     }
 
     @DeleteMapping("/profile/{phoneNumber}/photo")
-    public ApiResponse<User> removeProfilePhoto(@PathVariable String phoneNumber){
+    public ApiResponse<User> removeProfilePhoto(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable @Pattern(regexp = "\\d{10}", message = "Phone number must contain exactly 10 digits") String phoneNumber
+    ){
         return new ApiResponse<>(
                 "SUCCESS",
                 "Profile photo removed",
-                userService.removeProfilePhoto(phoneNumber)
+                userService.removeProfilePhoto(phoneNumber, authorizationHeader)
         );
+    }
+
+    @DeleteMapping("/account")
+    public ApiResponse<Void> deleteAccount(@RequestHeader("Authorization") String authorizationHeader) {
+        userService.deleteCurrentAccount(authorizationHeader);
+        return new ApiResponse<>("SUCCESS", "Account deleted successfully", null);
     }
 }

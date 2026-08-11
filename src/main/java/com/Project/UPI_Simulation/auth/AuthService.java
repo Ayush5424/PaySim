@@ -1,13 +1,15 @@
 package com.Project.UPI_Simulation.auth;
 
-import com.Project.UPI_Simulation.repository.UserRepository;
+import com.Project.UPI_Simulation.dto.AuthResponse;
+import com.Project.UPI_Simulation.dto.UserSessionResponse;
+import com.Project.UPI_Simulation.entity.Account;
+import com.Project.UPI_Simulation.entity.User;
 import com.Project.UPI_Simulation.repository.AccountRepository;
-import com.Project.UPI_Simulation.service.OtpService;
+import com.Project.UPI_Simulation.repository.UserRepository;
+import com.Project.UPI_Simulation.service.AuthSessionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.Project.UPI_Simulation.entity.Account;
-import com.Project.UPI_Simulation.entity.User;
 
 import java.math.BigDecimal;
 import java.util.Random;
@@ -19,70 +21,28 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
-    private final OtpService otpService;
+    private final AuthSessionService authSessionService;
 
-    public String sendSignupOtp(SignupRequest request){
-        if(userRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()){
-            throw new RuntimeException("Phone number already registered");
-        }
-        otpService.generateOtp(request.getPhoneNumber());
-        return "OTP sent successfully";
-    }
-    public String verifySignupOtp(
-            VerifyOtpRequest request
-    ) {
-
-        boolean verified =
-                otpService.verifyOtp(
-                        request.getPhoneNumber(),
-                        request.getOtp()
-                );
-
-        if (!verified) {
-
-            throw new RuntimeException(
-                    "Invalid OTP"
-            );
-        }
-
-        otpService.clearOtp(
-                request.getPhoneNumber()
-        );
-
-        return "OTP verified successfully";
-    }
-
+    /**
+     * Signup: validate uniqueness, create user + account, create session, return AuthResponse.
+     */
     @Transactional
-    public User createProfile(CreateProfileRequest request){
-        if(!otpService.isPhoneVerified(request.getPhoneNumber())){
-            throw new RuntimeException("Phone number not verified");
-        }
+    public AuthResponse signup(CreateProfileRequest request) {
+        validateUniqueUserFields(request.getPhoneNumber(), request.getEmail());
 
         User user = new User();
 
-        user.setName(request.getName());
-        user.setDisplayName(request.getName());
+        String trimmedName = request.getName().trim();
+        user.setName(trimmedName);
+        user.setDisplayName(trimmedName);
         user.setPhoneNumber(request.getPhoneNumber());
+        user.setEmail(normalizeEmail(request.getEmail()));
         user.setPin(request.getPin());
-        user.setVerified(
-                true
-        );
+        user.setVerified(true);
 
-        String upiId =
-                request.getName()
-                        .toLowerCase()
-                        .replaceAll("\\s+", "")
-                        +
-                        (1000 + new Random().nextInt(9000))
-                        +
-                        "@upi";
+        user.setUpiId(generateUniqueUpiId(trimmedName));
 
-        user.setUpiId(
-                upiId
-        );
-
-        User savedUser =
-                userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
         Account account = new Account();
         account.setUser(savedUser);
@@ -92,44 +52,71 @@ public class AuthService {
 
         accountRepository.save(account);
 
-        otpService.clearVerification(
-                request.getPhoneNumber()
+        return new AuthResponse(
+                authSessionService.createSession(savedUser),
+                UserSessionResponse.from(savedUser)
         );
-
-        return savedUser;
-
     }
 
-    public String sendLoginOtp(LoginRequest request){
-        userRepository.findByNameAndPhoneNumber(request.getName(), request.getPhoneNumber()).orElseThrow(() -> new RuntimeException("User not found"));
+    /**
+     * Login: validate user credentials (name + phone), create session, return AuthResponse.
+     */
+    @Transactional
+    public AuthResponse login(LoginRequest request) {
+        User user = userRepository
+                .findByNameAndPhoneNumber(request.getName(), request.getPhoneNumber())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        otpService.generateOtp(request.getPhoneNumber());
-
-        return "Login OTP sent successfully";
+        return new AuthResponse(
+                authSessionService.createSession(user),
+                UserSessionResponse.from(user)
+        );
     }
 
-    public String verifyLoginOtp(
-            VerifyOtpRequest request
-    ) {
+    @Transactional(readOnly = true)
+    public UserSessionResponse getCurrentUser(String authorizationHeader) {
+        return UserSessionResponse.from(authSessionService.requireUser(authorizationHeader));
+    }
 
-        boolean verified =
-                otpService.verifyOtp(
-                        request.getPhoneNumber(),
-                        request.getOtp()
-                );
+    @Transactional
+    public String logout(String authorizationHeader) {
+        authSessionService.logout(authorizationHeader);
+        return "Logged out successfully";
+    }
 
-        if (!verified) {
-
-            throw new RuntimeException(
-                    "Invalid OTP"
-            );
+    private void validateUniqueUserFields(String phoneNumber, String email) {
+        if (userRepository.existsByPhoneNumber(phoneNumber)) {
+            throw new RuntimeException("Phone number already registered");
         }
 
-        otpService.clearOtp(
-                request.getPhoneNumber()
-        );
+        String normalizedEmail = normalizeEmail(email);
+        if (normalizedEmail != null && userRepository.existsByEmail(normalizedEmail)) {
+            throw new RuntimeException("Email already registered");
+        }
+    }
 
-        return "Login successful";
+    private String generateUniqueUpiId(String name) {
+        String base = name.toLowerCase().replaceAll("[^a-z0-9]", "");
+        if (base.isBlank()) {
+            base = "user";
+        }
+
+        Random random = new Random();
+        for (int i = 0; i < 20; i++) {
+            String candidate = base + (1000 + random.nextInt(9000)) + "@upi";
+            if (!userRepository.existsByUpiId(candidate)) {
+                return candidate;
+            }
+        }
+
+        throw new RuntimeException("UPI ID already exists");
+    }
+
+    private String normalizeEmail(String email) {
+        if (email == null || email.isBlank()) {
+            return null;
+        }
+        return email.trim().toLowerCase();
     }
 
 }

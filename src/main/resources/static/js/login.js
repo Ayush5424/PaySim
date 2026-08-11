@@ -11,12 +11,15 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        setAuthFlow({ name, phoneNumber: phone });
-
         try {
             setLoading(true);
-            await requestAuthText(API.auth.sendLoginOtp, { name, phoneNumber: phone });
-            window.location.href = "login-otp.html";
+            const auth = await requestJson(API.auth.login, {
+                method: "POST",
+                body: JSON.stringify({ name, phoneNumber: phone })
+            });
+            setSession(auth);
+            clearAuthFlow();
+            window.location.href = "dashboard.html";
         } catch (err) {
             showToast(err.message, "error");
         } finally {

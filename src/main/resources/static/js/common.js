@@ -6,11 +6,11 @@ const API_BASE = resolveApiBase();
 
 const API = {
     auth: {
-        sendSignupOtp: `${API_BASE}/api/auth/send-signup-otp`,
-        verifySignupOtp: `${API_BASE}/api/auth/verify-signup-otp`,
+        signup: `${API_BASE}/api/auth/signup`,
         createProfile: `${API_BASE}/api/auth/create-profile`,
-        sendLoginOtp: `${API_BASE}/api/auth/send-login-otp`,
-        verifyLoginOtp: `${API_BASE}/api/auth/verify-login-otp`
+        login: `${API_BASE}/api/auth/login`,
+        me: `${API_BASE}/api/auth/me`,
+        logout: `${API_BASE}/api/auth/logout`
     },
     user: {
         balance: (upiId) => `${API_BASE}/api/user/balance/${encodeURIComponent(upiId)}`,
@@ -18,7 +18,8 @@ const API = {
         transactions: (upiId) => `${API_BASE}/api/user/transactions/${encodeURIComponent(upiId)}`,
         byPhone: (phone) => `${API_BASE}/api/user/phone/${encodeURIComponent(phone)}`,
         updateProfile: (phone) => `${API_BASE}/api/user/profile/${encodeURIComponent(phone)}`,
-        removePhoto: (phone) => `${API_BASE}/api/user/profile/${encodeURIComponent(phone)}/photo`
+        removePhoto: (phone) => `${API_BASE}/api/user/profile/${encodeURIComponent(phone)}/photo`,
+        deleteAccount: `${API_BASE}/api/user/account`
     },
     payment: {
         send: `${API_BASE}/api/payment/send`,
@@ -99,7 +100,8 @@ function mountThemeToggle() {
 
 function getSession() {
     try {
-        return JSON.parse(sessionStorage.getItem(SESSION_KEY));
+        const saved = localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY);
+        return saved ? JSON.parse(saved) : null;
     } catch {
         return null;
     }
@@ -107,19 +109,22 @@ function getSession() {
 
 function setSession(user) {
     const existing = getSession() || {};
+    const payload = user.user ? user.user : user;
     const session = {
-        name: user.name || existing.name,
-        displayName: user.displayName || user.name || existing.displayName,
-        phoneNumber: user.phoneNumber || existing.phoneNumber,
-        upiId: user.upiId || existing.upiId,
-        verified: user.verified ?? existing.verified ?? true,
-        pin: user.pin ?? existing.pin ?? null
+        token: user.token || existing.token,
+        name: payload.name || existing.name,
+        displayName: payload.displayName || payload.name || existing.displayName,
+        phoneNumber: payload.phoneNumber || existing.phoneNumber,
+        email: payload.email ?? existing.email ?? null,
+        upiId: payload.upiId || existing.upiId,
+        verified: payload.verified ?? existing.verified ?? true
     };
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-    if (session.phoneNumber && (user.displayName || user.name || user.profilePhoto)) {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    sessionStorage.removeItem(SESSION_KEY);
+    if (session.phoneNumber && (payload.displayName || payload.name || payload.profilePhoto)) {
         setProfileData(session.phoneNumber, {
-            displayName: user.displayName || user.name || session.displayName,
-            photo: user.profilePhoto || getProfilePhoto(session.phoneNumber)
+            displayName: payload.displayName || payload.name || session.displayName,
+            photo: payload.profilePhoto || getProfilePhoto(session.phoneNumber)
         });
     }
     return session;
@@ -127,7 +132,7 @@ function setSession(user) {
 
 function updateSession(fields) {
     const session = { ...getSession(), ...fields };
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
     return session;
 }
 
@@ -216,6 +221,7 @@ async function renderUpiQr(canvasOrImgId, upiId, name) {
 }
 
 function clearSession() {
+    localStorage.removeItem(SESSION_KEY);
     sessionStorage.removeItem(SESSION_KEY);
     setBalanceUnlocked(false);
 }
@@ -253,23 +259,39 @@ function clearPaymentDraft() {
 }
 
 function requireAuth(redirectTo = "login.html") {
-    if (!getSession()?.upiId) {
-        window.location.href = redirectTo;
+    const session = getSession();
+    if (!session?.token || !session?.upiId) {
+        window.location.replace(redirectTo);
         return false;
     }
     return true;
 }
 
 function redirectIfAuthed(target = "dashboard.html") {
-    if (getSession()?.upiId) {
-        window.location.href = target;
+    if (getSession()?.token && getSession()?.upiId) {
+        window.location.replace(target);
     }
 }
 
+window.addEventListener("pageshow", (event) => {
+    if (event.persisted && document.getElementById("bottomNav") && !getSession()?.token) {
+        window.location.replace("login.html");
+    }
+});
+
 async function requestJson(url, options = {}) {
+    const headers = {
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+    };
+    const token = getSession()?.token;
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    }
+
     const response = await fetch(url, {
-        headers: { "Content-Type": "application/json" },
-        ...options
+        ...options,
+        headers,
     });
 
     const text = await response.text();
@@ -283,6 +305,10 @@ async function requestJson(url, options = {}) {
     }
 
     if (!response.ok || data.status === "FAILED") {
+        if (response.status === 401 || ["Authentication required", "Session expired"].includes(data.message)) {
+            clearSession();
+            window.location.replace("login.html");
+        }
         throw new Error(data.message || "Request failed");
     }
 
@@ -344,7 +370,7 @@ function formatDate(dateStr) {
 }
 
 function isValidPhone(phone) {
-    return /^[6-9]\d{9}$/.test(phone);
+    return /^\d{10}$/.test(phone);
 }
 
 function isValidUpiId(upiId) {
@@ -376,46 +402,6 @@ function showToast(message, type = "info") {
         toast.style.transition = "0.3s ease";
         setTimeout(() => toast.remove(), 300);
     }, 3500);
-}
-
-function bindOtpInputs() {
-    document.querySelectorAll(".otp-digit").forEach((input) => {
-        input.addEventListener("input", () => {
-            input.value = input.value.replace(/\D/g, "").slice(0, 1);
-            if (input.value && input.nextElementSibling?.classList.contains("otp-digit")) {
-                input.nextElementSibling.focus();
-            }
-        });
-
-        input.addEventListener("keydown", (e) => {
-            if (e.key === "Backspace" && !input.value && input.previousElementSibling) {
-                input.previousElementSibling.focus();
-            }
-        });
-
-        input.addEventListener("paste", (e) => {
-            e.preventDefault();
-            const paste = (e.clipboardData.getData("text") || "").replace(/\D/g, "").slice(0, 6);
-            const group = input.dataset.otp;
-            const inputs = [...document.querySelectorAll(`.otp-digit[data-otp="${group}"]`)];
-            paste.split("").forEach((char, i) => {
-                if (inputs[i]) inputs[i].value = char;
-            });
-            if (inputs[paste.length - 1]) inputs[paste.length - 1].focus();
-        });
-    });
-}
-
-function collectOtp(group) {
-    return [...document.querySelectorAll(`.otp-digit[data-otp="${group}"]`)]
-        .map((i) => i.value)
-        .join("");
-}
-
-function clearOtpInputs(group) {
-    document.querySelectorAll(`.otp-digit[data-otp="${group}"]`).forEach((i) => {
-        i.value = "";
-    });
 }
 
 function bindPinKeypad(targetId, dotsId, onPay) {

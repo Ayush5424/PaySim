@@ -20,7 +20,7 @@ public class Account {
 
     private String pin;
 
-    @OneToOne
+    @OneToOne(optional = false)
     private User user;
 
 }
