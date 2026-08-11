@@ -3,6 +3,7 @@ package com.Project.UPI_Simulation.controller;
 import com.Project.UPI_Simulation.dto.ApiResponse;
 import com.Project.UPI_Simulation.dto.PaymentRequest;
 import com.Project.UPI_Simulation.service.PaymentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +17,11 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping("/send")
-    public ApiResponse<Map<String, Object>> sendMoney(@RequestBody PaymentRequest request){
-        Map<String, Object> result = paymentService.sendMoney(request);
+    public ApiResponse<Map<String, Object>> sendMoney(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @Valid @RequestBody PaymentRequest request
+    ){
+        Map<String, Object> result = paymentService.sendMoney(request, authorizationHeader);
         return new ApiResponse<>("SUCCESS", "Payment Successful", result);
     }
 }

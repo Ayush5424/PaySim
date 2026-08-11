@@ -24,8 +24,12 @@
     </header>
 
     <div class="auth-content">
-        <p class="screen-subtitle">Enter your mobile number to get started</p>
-        <form id="signupPhoneForm" class="form-stack">
+        <p class="screen-subtitle">Create your UPI account</p>
+        <form id="signupForm" class="form-stack">
+            <div class="input-group">
+                <label for="signupName">Full Name</label>
+                <input id="signupName" name="name" type="text" placeholder="Your name" required autocomplete="name">
+            </div>
             <div class="input-group">
                 <label for="signupPhone">Mobile Number</label>
                 <div class="phone-input-wrap">
@@ -33,7 +37,16 @@
                     <input id="signupPhone" name="phoneNumber" type="tel" inputmode="numeric" maxlength="10" placeholder="9876543210" required autocomplete="tel">
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary btn-lg btn-block">Send OTP</button>
+            <div class="input-group">
+                <label for="signupEmail">Email <span style="font-weight:400;opacity:0.6">(optional)</span></label>
+                <input id="signupEmail" name="email" type="email" placeholder="you@example.com" autocomplete="email">
+            </div>
+            <div class="input-group">
+                <label for="signupPin">Create UPI PIN</label>
+                <input id="signupPin" name="pin" type="password" inputmode="numeric" maxlength="6" placeholder="4–6 digit PIN" required autocomplete="new-password">
+                <small class="input-hint">You'll use this PIN to authorize payments</small>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Create Account</button>
         </form>
         <p class="auth-switch">Already have an account? <a href="login.html">Log in</a></p>
     </div>

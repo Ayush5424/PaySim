@@ -18,6 +18,10 @@ document.addEventListener("DOMContentLoaded", () => {
             showToast("PIN must be at least 4 digits", "error");
             return;
         }
+        if (!/^\d{4,6}$/.test(pin)) {
+            showToast("PIN must contain 4 to 6 digits only", "error");
+            return;
+        }
 
         try {
             setLoading(true);
@@ -26,12 +30,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({
                     phoneNumber: flow.phoneNumber,
                     name,
-                    pin
+                    pin,
+                    email: document.getElementById("signupEmail")?.value.trim() || null
                 })
             });
 
-            const user = result.upiId ? result : result.data;
-            setSession({ ...user, pin });
+            const user = result.user;
+            setSession(result);
             clearAuthFlow();
             showToast(`Welcome! Your UPI ID: ${user.upiId}`, "success");
             window.location.href = "dashboard.html";

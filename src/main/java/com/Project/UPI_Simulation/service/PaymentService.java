@@ -26,9 +26,12 @@ public class PaymentService {
     private final UserRepository userRepo;
     private final AccountRepository accountRepo;
     private final TransactionRepository txnRepo;
+    private final AuthSessionService authSessionService;
 
     @Transactional
-    public Map<String, Object> sendMoney(PaymentRequest request) {
+    public Map<String, Object> sendMoney(PaymentRequest request, String authorizationHeader) {
+        User currentUser = authSessionService.requireUser(authorizationHeader);
+        request.setFromUpi(currentUser.getUpiId());
 
         if (request.getFromUpi().equals(request.getToUpi())) {
             throw new RuntimeException("Cannot send money to yourself");
@@ -86,6 +89,19 @@ public class PaymentService {
         response.put("transactionId", txn.getTransactionId());
 
         return response;
+    }
+
+    @Transactional
+    public Map<String, Object> sendMoney(PaymentRequest request) {
+        return sendMoney(request, null);
+    }
+
+    public List<Transaction> getTransactions(String upiId, String authorizationHeader) {
+        User currentUser = authSessionService.requireUser(authorizationHeader);
+        if (!currentUser.getUpiId().equals(upiId)) {
+            throw new RuntimeException("You are not allowed to access these transactions");
+        }
+        return txnRepo.findBySenderUpiOrReceiverUpiOrderByIdDesc(upiId, upiId);
     }
 
     public List<Transaction> getTransactions(String upiId) {

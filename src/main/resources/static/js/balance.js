@@ -6,13 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     bindBalancePinKeypad();
 
-    if (isBalanceUnlocked() && getSession()?.pin) {
-        unlockedBalancePin = String(getSession().pin);
-        showBalanceContent();
-        loadBalance();
-    } else {
-        setBalanceUnlocked(false);
-    }
+    setBalanceUnlocked(false);
 
     document.getElementById("refreshBalanceBtn")?.addEventListener("click", loadBalance);
     document.getElementById("lockBalanceBtn")?.addEventListener("click", () => {
