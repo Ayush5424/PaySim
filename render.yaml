@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: paysim
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: paysim-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: paysim-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: paysim-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: paysim-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: paysim-db
+          property: password
+
+databases:
+  - name: paysim-db
+    plan: free
