@@ -6,9 +6,12 @@ import com.Project.UPI_Simulation.entity.User;
 import com.Project.UPI_Simulation.repository.AccountRepository;
 import com.Project.UPI_Simulation.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -18,32 +21,41 @@ public class UserService {
     private final UserRepository userRepo;
     private final AccountRepository accountRepo;
     private final AuthSessionService authSessionService;
+    private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public User createUser(User user) {
         validateUniqueUser(user);
 
-        user.setUpiId(user.getName().toLowerCase() + "@okbank");
+        if (user.getUpiId() == null || user.getUpiId().isBlank()) {
+            user.setUpiId(user.getName().toLowerCase().replaceAll("[^a-z0-9]", "") + "@paysim");
+        }
         if (userRepo.existsByUpiId(user.getUpiId())) {
             throw new RuntimeException("UPI ID already exists");
         }
         user.setDisplayName(user.getName());
+        
+        if (user.getPin() != null && !user.getPin().isBlank()) {
+            user.setPinHash(passwordEncoder.encode(user.getPin()));
+            user.setPasswordHash(user.getPinHash());
+        }
 
         User savedUser = userRepo.save(user);
 
         Account account = new Account();
         account.setUser(savedUser);
-        account.setAccountNumber(UUID.randomUUID().toString());
-        account.setBalance(BigDecimal.ZERO); //
-        account.setPin("1234");
+        account.setAccountNumber("ACC" + (1000000000L + new Random().nextInt(900000000)));
+        account.setBalance(BigDecimal.ZERO);
+        account.setPinHash(savedUser.getPinHash());
+        account.setPin(savedUser.getPin());
 
         accountRepo.save(account);
 
         return savedUser;
     }
 
-    // Get balance
+    @Transactional(readOnly = true)
     public BigDecimal getBalance(String upiId) {
-
         User user = userRepo.findByUpiId(upiId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -53,6 +65,7 @@ public class UserService {
         return account.getBalance();
     }
 
+    @Transactional(readOnly = true)
     public BigDecimal getBalance(String upiId, String pin) {
         User user = userRepo.findByUpiId(upiId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -60,27 +73,36 @@ public class UserService {
         Account account = accountRepo.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        if (!account.getPin().equals(pin)) {
+        boolean pinValid = (account.getPinHash() != null && passwordEncoder.matches(pin, account.getPinHash()))
+                || (user.getPinHash() != null && passwordEncoder.matches(pin, user.getPinHash()))
+                || pin.equals(account.getPin())
+                || pin.equals(user.getPin());
+
+        if (!pinValid) {
             throw new RuntimeException("Invalid PIN");
         }
 
         return account.getBalance();
     }
 
-    public User getUserByPhone(String phoneNumber){
+    @Transactional(readOnly = true)
+    public User getUserByPhone(String phoneNumber) {
         return userRepo.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new RuntimeException("User Not Found"));
     }
 
+    @Transactional(readOnly = true)
     public User getUserByPhoneForCurrentUser(String phoneNumber, String authorizationHeader) {
         authSessionService.requireUser(authorizationHeader);
         return getUserByPhone(phoneNumber);
     }
 
+    @Transactional(readOnly = true)
     public User getCurrentUser(String authorizationHeader) {
         return authSessionService.requireUser(authorizationHeader);
     }
 
+    @Transactional(readOnly = true)
     public BigDecimal getBalanceForCurrentUser(String upiId, String pin, String authorizationHeader) {
         User currentUser = authSessionService.requireUser(authorizationHeader);
         requireSameUpi(currentUser, upiId);
@@ -88,11 +110,12 @@ public class UserService {
     }
 
     public void requireSameUpi(User user, String upiId) {
-        if (!user.getUpiId().equals(upiId)) {
+        if (!user.getUpiId().equalsIgnoreCase(upiId)) {
             throw new RuntimeException("You are not allowed to access this account");
         }
     }
 
+    @Transactional
     public User updateProfile(String phoneNumber, ProfileUpdateRequest request, String authorizationHeader) {
         User user = authSessionService.requireUser(authorizationHeader);
         requireSamePhone(user, phoneNumber);
@@ -114,6 +137,7 @@ public class UserService {
         return userRepo.save(user);
     }
 
+    @Transactional
     public User removeProfilePhoto(String phoneNumber, String authorizationHeader) {
         User user = authSessionService.requireUser(authorizationHeader);
         requireSamePhone(user, phoneNumber);
@@ -121,7 +145,7 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public void deleteCurrentAccount(String authorizationHeader) {
         User user = authSessionService.requireUser(authorizationHeader);
         accountRepo.deleteByUser(user);
@@ -147,3 +171,4 @@ public class UserService {
         }
     }
 }
+

@@ -3,25 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#123b3b">
+    <meta name="theme-color" content="#0b1528">
     <title>Payment Successful — PaySim</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="app-container page page-app">
-    <div class="payment-success">
-        <div class="success-checkmark small">
-            <svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="25" fill="none" class="check-circle"/>
-                <path fill="none" d="M14 27l8 8 16-16" class="check-path"/></svg>
+    <div class="success-screen-wrap">
+
+        <!-- Animated success hero -->
+        <div class="success-hero">
+            <div class="success-icon-wrap" aria-hidden="true">
+                <svg viewBox="0 0 52 52" fill="none" stroke="#166534" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="26" cy="26" r="24" stroke="#166534" stroke-width="2" fill="none" class="check-circle"/>
+                    <path d="M14 27l8 8 16-16" class="check-path"/>
+                </svg>
+            </div>
+            <h1 class="success-title">Payment Successful!</h1>
+            <p class="success-subtitle">Your payment has been processed</p>
         </div>
-        <h3>Payment Successful!</h3>
-        <p class="success-amount" id="successAmount">₹0</p>
-        <p class="success-detail" id="successDetail">Sent to —</p>
-        <p class="txn-id" id="successTxnId"></p>
-        <a href="dashboard.html" class="btn btn-primary btn-block">Back to Home</a>
-        <a href="transactions.html" class="btn btn-glass btn-block">View History</a>
+
+        <!-- Receipt card -->
+        <div class="success-receipt-card">
+            <div class="success-receipt-amount-row">
+                <p class="success-receipt-amount-label">Amount Paid</p>
+                <p class="success-receipt-amount-value" id="successAmount">₹0</p>
+            </div>
+            <div class="success-receipt-body">
+                <div class="receipt-row">
+                    <span class="receipt-label">Paid to</span>
+                    <span class="receipt-value" id="successToName">—</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">UPI ID</span>
+                    <span class="receipt-value" id="successToUpi">—</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Date & Time</span>
+                    <span class="receipt-value" id="successDateTime">—</span>
+                </div>
+                <div class="receipt-row" id="txnIdRow">
+                    <span class="receipt-label">Txn ID</span>
+                    <span class="receipt-value mono" id="successTxnId">—</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Status</span>
+                    <span class="receipt-value success-color">✓ Success</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="success-actions">
+            <button type="button" class="btn btn-glass btn-block btn-share" id="shareReceiptBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                Share Receipt
+            </button>
+            <a href="dashboard.html" class="btn btn-primary btn-block">Back to Home</a>
+            <a href="transactions.html" class="btn btn-glass btn-block">View History</a>
+        </div>
+
     </div>
 </div>
 

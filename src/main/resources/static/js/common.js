@@ -61,7 +61,7 @@ function applyTheme(theme) {
     document.documentElement.dataset.theme = nextTheme;
     document.querySelector('meta[name="theme-color"]')?.setAttribute(
         "content",
-        nextTheme === "dark" ? "#111827" : "#123b3b"
+        nextTheme === "dark" ? "#090e17" : "#0b1528"
     );
     document.querySelectorAll(".theme-toggle").forEach((toggle) => {
         toggle.setAttribute("aria-checked", String(nextTheme === "dark"));

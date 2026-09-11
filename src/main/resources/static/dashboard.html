@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#123b3b">
+    <meta name="theme-color" content="#0b1528">
     <title>Dashboard — PaySim</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,29 +15,39 @@
 <div class="app-container page page-app page-dashboard">
     <header class="dash-header">
         <div class="dash-greeting">
-            <span class="greeting-label">Good day,</span>
+            <span class="greeting-label" id="dashGreeting">Good day,</span>
             <h1 id="dashUserName">User</h1>
         </div>
         <a href="profile.html" class="avatar-btn" id="dashAvatar" aria-label="Open profile">U</a>
     </header>
 
-    <div class="home-branding glass-card">
-        <div class="home-brand-logo">
-            <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                <rect width="48" height="48" rx="14" fill="url(#dashLogoGrad)"/>
-                <path d="M14 24h20M24 14v20" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-                <defs>
-                    <linearGradient id="dashLogoGrad" x1="0" y1="0" x2="48" y2="48">
-                        <stop stop-color="#0f766e"/><stop offset="1" stop-color="#1d4ed8"/>
-                    </linearGradient>
-                </defs>
-            </svg>
+    <!-- Balance preview card -->
+    <div class="balance-preview-card">
+        <div class="balance-preview-top">
+            <span class="balance-preview-label">Total Balance</span>
+            <button class="balance-eye-btn" id="balanceEyeBtn" aria-label="Toggle balance visibility" type="button">
+                <svg id="eyeIconShow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg id="eyeIconHide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
         </div>
-        <h2 class="home-brand-title">PaySim UPI</h2>
-        <p class="home-brand-tagline">Send money instantly · Scan QR · Pay by phone · 100% secure simulation</p>
-        <div class="home-brand-upi">
-            <span class="label-sm">Your UPI ID</span>
-            <strong id="dashUpiId">—</strong>
+        <p class="balance-preview-amount masked" id="dashBalanceAmount">₹12,500.00</p>
+        <button class="balance-preview-upi" id="dashUpiCopyBtn" type="button" aria-label="Copy UPI ID">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            <span id="dashUpiId">—</span>
+        </button>
+        <div class="balance-preview-actions">
+            <a href="pay-phone.html" class="balance-action-send">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Send Money
+            </a>
+            <a href="pay-qr.html" class="balance-action-send">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+                Scan QR
+            </a>
+            <a href="transactions.html" class="balance-action-history">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                History
+            </a>
         </div>
     </div>
 
@@ -73,6 +83,25 @@
             </div>
             <span>Profile</span>
         </a>
+    </div>
+
+    <div class="section-label" style="margin-top: 8px;">Recent Activity</div>
+    <div id="dashRecentTxns" class="recent-txn-list">
+        <!-- Skeleton loaders shown until JS replaces them -->
+        <div class="skeleton-txn" aria-hidden="true">
+            <div class="skeleton skeleton-avatar"></div>
+            <div class="skeleton-txn-body">
+                <div class="skeleton skeleton-line w-60"></div>
+                <div class="skeleton skeleton-line w-40"></div>
+            </div>
+        </div>
+        <div class="skeleton-txn" aria-hidden="true">
+            <div class="skeleton skeleton-avatar"></div>
+            <div class="skeleton-txn-body">
+                <div class="skeleton skeleton-line w-80"></div>
+                <div class="skeleton skeleton-line w-40"></div>
+            </div>
+        </div>
     </div>
 </div>
 

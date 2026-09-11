@@ -4,11 +4,17 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentRequest {
     private String fromUpi;
     @NotBlank(message = "Receiver UPI ID is required")
@@ -19,3 +25,4 @@ public class PaymentRequest {
     @Pattern(regexp = "\\d{4,6}", message = "PIN must contain 4 to 6 digits")
     private String pin;
 }
+

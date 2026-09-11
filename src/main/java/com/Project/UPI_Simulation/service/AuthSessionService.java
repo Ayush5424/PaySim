@@ -3,7 +3,11 @@ package com.Project.UPI_Simulation.service;
 import com.Project.UPI_Simulation.entity.AuthSession;
 import com.Project.UPI_Simulation.entity.User;
 import com.Project.UPI_Simulation.repository.AuthSessionRepository;
+import com.Project.UPI_Simulation.repository.UserRepository;
+import com.Project.UPI_Simulation.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +26,15 @@ public class AuthSessionService {
     private static final Duration SESSION_TTL = Duration.ofDays(30);
 
     private final AuthSessionRepository authSessionRepository;
+    private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     public String createSession(User user) {
-        authSessionRepository.deleteByExpiresAtBefore(Instant.now());
+        try {
+            authSessionRepository.deleteByExpiresAtBefore(Instant.now());
+        } catch (Exception ignored) {
+        }
 
         String token = UUID.randomUUID() + "-" + UUID.randomUUID();
         AuthSession session = new AuthSession();
@@ -39,7 +48,27 @@ public class AuthSessionService {
 
     @Transactional(readOnly = true)
     public User requireUser(String authorizationHeader) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof User user) {
+            return user;
+        }
+
         String token = extractBearerToken(authorizationHeader);
+        return getUserFromToken(token);
+    }
+
+    @Transactional(readOnly = true)
+    public User getUserFromToken(String token) {
+        if (token == null || token.isBlank()) {
+            throw new RuntimeException("Authentication required");
+        }
+
+        if (jwtTokenProvider.validateToken(token)) {
+            Long userId = jwtTokenProvider.getUserIdFromToken(token);
+            return userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+        }
+
         AuthSession session = authSessionRepository.findByTokenHash(hashToken(token))
                 .orElseThrow(() -> new RuntimeException("Authentication required"));
 
@@ -52,8 +81,12 @@ public class AuthSessionService {
 
     @Transactional
     public void logout(String authorizationHeader) {
-        String token = extractBearerToken(authorizationHeader);
-        authSessionRepository.deleteByTokenHash(hashToken(token));
+        try {
+            String token = extractBearerToken(authorizationHeader);
+            authSessionRepository.deleteByTokenHash(hashToken(token));
+        } catch (Exception ignored) {
+        }
+        SecurityContextHolder.clearContext();
     }
 
     @Transactional
@@ -62,10 +95,13 @@ public class AuthSessionService {
     }
 
     private String extractBearerToken(String authorizationHeader) {
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+        if (authorizationHeader == null) {
             throw new RuntimeException("Authentication required");
         }
-        String token = authorizationHeader.substring(7).trim();
+        String token = authorizationHeader;
+        if (authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7).trim();
+        }
         if (token.isBlank()) {
             throw new RuntimeException("Authentication required");
         }
@@ -81,3 +117,4 @@ public class AuthSessionService {
         }
     }
 }
+

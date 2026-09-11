@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#123b3b">
+    <meta name="theme-color" content="#0b1528">
     <title>Confirm Payment — PaySim</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -20,20 +20,34 @@
     </header>
 
     <div class="pin-screen">
-        <h3>Enter UPI PIN</h3>
-        <p class="pin-summary">Paying <strong id="pinAmount">₹0</strong> to <strong id="pinReceiver">—</strong></p>
+        <!-- Confirmation receipt card -->
+        <div class="confirm-receipt" id="confirmReceipt">
+            <div class="confirm-receipt-avatar" id="confirmAvatar">?</div>
+            <p class="confirm-receipt-name" id="confirmName">—</p>
+            <p class="confirm-receipt-upi" id="confirmUpi">—</p>
+            <hr class="confirm-receipt-divider">
+            <p class="confirm-receipt-amount-label">You are paying</p>
+            <p class="confirm-receipt-amount" id="pinAmount">₹0</p>
+            <span class="secure-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Secured by UPI PIN
+            </span>
+        </div>
+
+        <h3 class="pin-screen-label">Enter UPI PIN</h3>
         <div class="pin-dots" id="paymentPinDots">
-            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span><span></span>
         </div>
         <input type="password" id="paymentPinInput" class="pin-hidden-input" inputmode="numeric" maxlength="6" autocomplete="off">
         <div class="pin-keypad" data-pin-target="paymentPinInput">
             <button type="button" data-key="1">1</button><button type="button" data-key="2">2</button><button type="button" data-key="3">3</button>
             <button type="button" data-key="4">4</button><button type="button" data-key="5">5</button><button type="button" data-key="6">6</button>
             <button type="button" data-key="7">7</button><button type="button" data-key="8">8</button><button type="button" data-key="9">9</button>
-            <button type="button" data-key="clear" class="key-clear">⌫</button><button type="button" data-key="0">0</button>
-            <button type="button" data-key="pay" class="key-pay">Pay</button>
+            <button type="button" data-key="clear" class="key-clear" aria-label="Delete">⌫</button><button type="button" data-key="0">0</button>
+            <button type="button" data-key="pay" class="key-pay" id="payBtn">Pay</button>
         </div>
     </div>
+
 </div>
 
 <div id="loadingOverlay" class="loading-overlay hidden"><div class="spinner"></div></div>

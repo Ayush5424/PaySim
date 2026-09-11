@@ -1,8 +1,6 @@
-# UPI Payment System
+# PaySim — UPI Payment Simulation
 
-A full-stack UPI payment simulation built with **Spring Boot, PostgreSQL, Spring Security, REST APIs, and HTML/CSS/JavaScript**.
-
-The project simulates core UPI functionality such as user registration, authentication, account management, peer-to-peer payments, QR-based payments, balance management, and transaction history.
+A **production-grade UPI Payment Simulation** backend built with Spring Boot 4, Java 21, PostgreSQL, Redis, Apache Kafka, and a vanilla HTML/CSS/JS frontend.
 
 > **Note:** This is a simulation project for learning and portfolio purposes. It does not connect to real UPI networks or process real money.
 
@@ -14,82 +12,60 @@ Live Demo
 ## 🚀 Features
 
 ### Authentication & User Management
-
-* User registration and profile creation
-* Phone number validation
-* Unique user and UPI ID validation
-* Session-based authentication
-* Login and logout functionality
-* Persistent login sessions until explicit logout
-* Account management
-* Delete account functionality
+* JWT access tokens (15 min) + refresh tokens (7 days)
+* BCrypt-hashed passwords and UPI PINs
+* Account lockout after 5 failed login attempts
+* Session management with SHA-256 token hash in `auth_sessions` table
 
 ### 💸 Payments
-
-* Peer-to-peer payments
-* Payment validation
-* Balance verification before transactions
-* Secure payment processing
-* Transaction records
-* Transaction history
+* UPI peer-to-peer transfers via `/api/v1/payments/send`
+* **Pessimistic row locking** (SELECT FOR UPDATE) in consistent ID order — zero race conditions
+* **Idempotency keys** — duplicate requests return cached response, no double debit
+* PIN verification on every payment
+* Payment receipt endpoint per transaction
 
 ### 📱 QR Payments
+* Generate UPI QR codes (ZXing)
+* Scan/pay via QR payload
 
-* Generate UPI QR codes
-* Scan/pay using UPI QR information
-* QR-based payment processing
+### 📨 Event-Driven Architecture
+* Kafka topic `paysim-payment-events` for all payment outcomes
+* Async consumer logs audit events and creates receiver notifications
+* Dead letter queue (DLQ) for failed events
 
-### 💰 Account & Balance
-
-* User account creation
-* Account balance management
-* Balance inquiry
-* Secure account operations
+### 📊 Observability
+* Spring Actuator (`/actuator/health`, `/actuator/metrics`)
+* Prometheus metrics (`/actuator/prometheus`)
+* Correlation ID (request tracing via MDC)
+* Structured JSON-style logging
 
 ### 🔐 Security
-
-* Spring Security
-* Session-based authentication
-* Protected backend APIs
-* Server-side validation
-* Unique user and UPI ID constraints
-* Sensitive database credentials handled through environment variables
+* Spring Security 6 with JWT filter chain
+* Per-user rate limiting (configurable)
+* CORS configuration
+* Jakarta Bean Validation on all DTOs
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Backend
-
-* Java 21
-* Spring Boot
-* Spring Security
-* Spring Data JPA
-* Hibernate
-* REST APIs
-* Maven
-
-### Database
-
-* PostgreSQL
-* Neon PostgreSQL for cloud deployment
-
-### Frontend
-
-* HTML5
-* CSS3
-* JavaScript
-
-### QR Code
-
-* ZXing
-
-### Deployment
-
-* Render
-* Neon PostgreSQL
-
----
+| Layer | Technology |
+|-------|-----------|
+| Language | Java 21 |
+| Framework | Spring Boot 4.0 |
+| Security | Spring Security 6 + JWT (JJWT 0.12) |
+| Database | PostgreSQL 16 (prod) / H2 (test) |
+| ORM | Hibernate 7 / Spring Data JPA |
+| Migrations | Flyway |
+| Cache | Redis 7 |
+| Messaging | Apache Kafka |
+| API Docs | SpringDoc OpenAPI 3 (Swagger UI) |
+| Observability | Actuator + Micrometer + Prometheus |
+| Frontend | HTML5 / CSS3 / JavaScript |
+| QR Code | ZXing |
+| Build | Maven |
+| CI/CD | GitHub Actions |
+| Container | Docker / Docker Compose |
 
 ## 🏗️ Architecture
 
@@ -383,20 +359,15 @@ https://github.com/Ayush5424
 
 ---
 
-## ⭐ Future Improvements
+## ⭐ Possible Future Enhancements
 
-Potential future enhancements include:
-
-* Email/phone verification
-* Rate limiting
-* Refresh-token authentication
-* Payment notifications
-* Improved transaction monitoring
-* Automated testing
-* Docker-based deployment
-* CI/CD pipeline
-* Production-grade logging and monitoring
-* Integration with a real payment gateway for sandbox testing
+* Email/phone OTP verification integration
+* WebSocket-based real-time payment notifications
+* Scheduled payment reminders
+* Multi-currency support
+* UPI Lite (offline payments)
+* Mobile app frontend (React Native / Flutter)
+* Integration with sandbox payment gateway
 
 ---
 
