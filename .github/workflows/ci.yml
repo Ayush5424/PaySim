@@ -22,8 +22,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Grant execute permission for mvnw
+        run: chmod +x ./mvnw
+
       - name: Run unit and integration tests
-        run: ./mvnw test -Dtest="AuthServiceTest,PaymentConcurrencyTest,IdempotencyTest,PaymentControllerIntegrationTest"
+        run: ./mvnw test -Dtest="AuthServiceTest,PaymentConcurrencyTest,IdempotencyTest,PaymentControllerIntegrationTest,UpiSimulationApplicationTests"
 
       - name: Build production JAR
         run: ./mvnw package -DskipTests
