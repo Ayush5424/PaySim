@@ -43,12 +43,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Share receipt button
     document.getElementById("shareReceiptBtn")?.addEventListener("click", () => {
         const text = [
-            "💳 PaySim Payment Receipt",
+            "PaySim Payment Receipt",
             `Amount : ${amountFormatted}`,
             `Paid to: ${lastPayment.toName || ""} (${lastPayment.toUpi || ""})`,
             `Date   : ${dateStr}, ${timeStr}`,
             lastPayment.transactionId ? `Txn ID : ${lastPayment.transactionId}` : "",
-            "Status : ✓ Success"
+            "Status : Success"
         ].filter(Boolean).join("\n");
 
         if (navigator.clipboard?.writeText) {

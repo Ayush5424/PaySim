@@ -9,7 +9,7 @@ A **production-grade UPI Payment Simulation** backend built with Spring Boot 4, 
 Live Demo
 - https://paysim-vh1r.onrender.com
 
-## 🚀 Features
+## Features
 
 ### Authentication & User Management
 * JWT access tokens (15 min) + refresh tokens (7 days)
@@ -17,29 +17,29 @@ Live Demo
 * Account lockout after 5 failed login attempts
 * Session management with SHA-256 token hash in `auth_sessions` table
 
-### 💸 Payments
+### Payments
 * UPI peer-to-peer transfers via `/api/v1/payments/send`
 * **Pessimistic row locking** (SELECT FOR UPDATE) in consistent ID order — zero race conditions
 * **Idempotency keys** — duplicate requests return cached response, no double debit
 * PIN verification on every payment
 * Payment receipt endpoint per transaction
 
-### 📱 QR Payments
+### QR Payments
 * Generate UPI QR codes (ZXing)
 * Scan/pay via QR payload
 
-### 📨 Event-Driven Architecture
+### Event-Driven Architecture
 * Kafka topic `paysim-payment-events` for all payment outcomes
 * Async consumer logs audit events and creates receiver notifications
 * Dead letter queue (DLQ) for failed events
 
-### 📊 Observability
+### Observability
 * Spring Actuator (`/actuator/health`, `/actuator/metrics`)
 * Prometheus metrics (`/actuator/prometheus`)
 * Correlation ID (request tracing via MDC)
 * Structured JSON-style logging
 
-### 🔐 Security
+### Security
 * Spring Security 6 with JWT filter chain
 * Per-user rate limiting (configurable)
 * CORS configuration
@@ -47,7 +47,7 @@ Live Demo
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -67,7 +67,7 @@ Live Demo
 | CI/CD | GitHub Actions |
 | Container | Docker / Docker Compose |
 
-## 🏗️ Architecture
+## Architecture
 
 ```text
                     ┌──────────────────────┐
@@ -100,7 +100,7 @@ Live Demo
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 UPI-Simulation/
@@ -132,7 +132,7 @@ UPI-Simulation/
 
 ---
 
-## 🔄 Application Flow
+## Application Flow
 
 ### Registration
 
@@ -188,7 +188,7 @@ Create Transaction Record
 
 ---
 
-## 🔐 Environment Variables
+## Environment Variables
 
 Database credentials are **not stored in the repository**.
 
@@ -212,7 +212,7 @@ For Render deployment, these values should be configured through the service's e
 
 ---
 
-## 💻 Running Locally
+## Running Locally
 
 ### Prerequisites
 
@@ -260,7 +260,7 @@ http://localhost:8080
 
 ---
 
-## 🌐 Deployment
+## Deployment
 
 The project can be deployed using:
 
@@ -291,7 +291,7 @@ The frontend and backend are served from the same Spring Boot application, so no
 
 ---
 
-## 🧪 Build Verification
+## Build Verification
 
 The project has been verified using:
 
@@ -307,7 +307,7 @@ BUILD SUCCESS
 
 ---
 
-## 📌 API Areas
+## API Areas
 
 The backend provides REST endpoints covering:
 
@@ -322,7 +322,7 @@ API requests are authenticated where required.
 
 ---
 
-## 🔒 Security Considerations
+## Security Considerations
 
 * Database credentials are supplied through environment variables.
 * Authentication is handled server-side.
@@ -333,7 +333,7 @@ API requests are authenticated where required.
 
 ---
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 This project is a **UPI simulation** created for educational and portfolio purposes.
 
@@ -348,7 +348,7 @@ No real financial transactions are processed.
 
 ---
 
-## 👨‍💻 Author
+##  Author
 
 **Ayush Abhinav**
 
@@ -359,7 +359,7 @@ https://github.com/Ayush5424
 
 ---
 
-## ⭐ Possible Future Enhancements
+## Possible Future Enhancements
 
 * Email/phone OTP verification integration
 * WebSocket-based real-time payment notifications
@@ -371,6 +371,6 @@ https://github.com/Ayush5424
 
 ---
 
-## 📄 License
+## License
 
 This project is intended primarily for educational and portfolio purposes.

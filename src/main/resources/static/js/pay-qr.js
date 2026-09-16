@@ -119,7 +119,7 @@ async function startQrScanner() {
     } catch {
         readerEl.innerHTML = `
             <div class="qr-placeholder-box" style="min-height:260px;justify-content:center;">
-                <span>📷</span>
+                <span>Scan</span>
                 <span>Camera unavailable</span>
                 <span style="font-size:0.75rem;">Use gallery scan or manual entry</span>
             </div>`;

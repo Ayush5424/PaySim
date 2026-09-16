@@ -21,16 +21,16 @@ PaySim is a production-grade UPI Payment Simulation backend built with Spring Bo
 `
 
 ## Package Structure
-- uth/ — Registration, login, JWT token issuing
-- config/ — Security, CORS, OpenAPI, Kafka, Redis, AppConfig
-- controller/ — PaymentController, TransactionController, UserController, QRController, NotificationController
-- dto/ — Request/Response DTOs
-- entity/ — JPA entities (User, Account, Transaction, RefreshToken, etc.)
-- event/ — Kafka PaymentEvent, Producer, Consumer
-- exception/ — GlobalExceptionHandler
-- epository/ — Spring Data JPA repositories with pessimistic locking
-- security/ — JwtTokenProvider, JwtAuthenticationFilter, RateLimitFilter
-- service/ — AuthService, PaymentService, AuthSessionService, IdempotencyService, AuditService, NotificationService
+- uth/ Â— Registration, login, JWT token issuing
+- config/ Â— Security, CORS, OpenAPI, Kafka, Redis, AppConfig
+- controller/ Â— PaymentController, TransactionController, UserController, QRController, NotificationController
+- dto/ Â— Request/Response DTOs
+- entity/ Â— JPA entities (User, Account, Transaction, RefreshToken, etc.)
+- event/ Â— Kafka PaymentEvent, Producer, Consumer
+- exception/ Â— GlobalExceptionHandler
+- epository/ Â— Spring Data JPA repositories with pessimistic locking
+- security/ Â— JwtTokenProvider, JwtAuthenticationFilter, RateLimitFilter
+- service/ Â— AuthService, PaymentService, AuthSessionService, IdempotencyService, AuditService, NotificationService
 
 ## Technology Stack
 | Component | Technology |
@@ -44,4 +44,4 @@ PaySim is a production-grade UPI Payment Simulation backend built with Spring Bo
 | Cache | Redis 7 |
 | Messaging | Apache Kafka |
 | API Docs | SpringDoc OpenAPI 3 (Swagger UI) |
-| Observability | Spring Actuator + Micrometer + Prometheus |
+| Observability | Spring Actuator + Micrometer + Prometheus |
