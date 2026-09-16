@@ -2873,3 +2873,326 @@ html[data-theme="dark"] .balance-preview-card {
         font-size: 0;  /* hide label text, keep toggle track */
     }
 }
+
+/* ════════════════════════════════════════════
+   Fintech Desktop Shell & Sidebar Navigation
+   ════════════════════════════════════════════ */
+
+.desktop-sidebar {
+    display: none;
+}
+
+@media (min-width: 900px) {
+    #bottomNav {
+        display: none !important;
+    }
+
+    .desktop-sidebar {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 260px;
+        background: #ffffff;
+        border-right: 1px solid #e2e8f0;
+        z-index: 90;
+        user-select: none;
+    }
+
+    html[data-theme="dark"] .desktop-sidebar {
+        background: #0f172a;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-header {
+        padding: 24px 20px 20px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    html[data-theme="dark"] .sidebar-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .sidebar-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .sidebar-logo {
+        width: 38px;
+        height: 38px;
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .sidebar-logo svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .sidebar-brand-text {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .brand-name {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.02em;
+    }
+
+    .brand-tagline {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+    }
+
+    .sidebar-nav {
+        flex: 1;
+        padding: 20px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        overflow-y: auto;
+    }
+
+    .sidebar-nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: var(--radius-sm);
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all var(--transition);
+    }
+
+    .sidebar-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+    }
+
+    .sidebar-icon svg {
+        width: 100%;
+        height: 100%;
+    }
+
+    .sidebar-nav-item:hover {
+        background: #f1f5f9;
+        color: var(--primary);
+    }
+
+    html[data-theme="dark"] .sidebar-nav-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: #60a5fa;
+    }
+
+    .sidebar-nav-item.active {
+        background: var(--primary);
+        color: #ffffff;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
+    }
+
+    .sidebar-footer {
+        padding: 16px 12px;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    html[data-theme="dark"] .sidebar-footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .sidebar-user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 10px;
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+        color: inherit;
+        transition: background var(--transition);
+    }
+
+    .sidebar-user:hover {
+        background: #f8fafc;
+    }
+
+    html[data-theme="dark"] .sidebar-user:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #e2e8f0;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    html[data-theme="dark"] .sidebar-avatar {
+        background: #334155;
+        color: #f8fafc;
+    }
+
+    .sidebar-user-info {
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .sidebar-user-name {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sidebar-user-upi {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sidebar-logout-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 9px 12px;
+        background: transparent;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--radius-sm);
+        color: var(--text-secondary);
+        font-size: 0.84rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition);
+    }
+
+    html[data-theme="dark"] .sidebar-logout-btn {
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--text-muted);
+    }
+
+    .sidebar-logout-btn:hover {
+        background: #fef2f2;
+        border-color: #fecaca;
+        color: #dc2626;
+    }
+
+    html[data-theme="dark"] .sidebar-logout-btn:hover {
+        background: rgba(220, 38, 38, 0.1);
+        border-color: rgba(220, 38, 38, 0.3);
+        color: #f87171;
+    }
+
+    .sidebar-logout-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Page container adjustments when desktop shell is active */
+    body.has-app-shell {
+        display: flex;
+        background: var(--bg-page);
+    }
+
+    body.has-app-shell .app-container {
+        margin-left: 260px;
+        width: calc(100% - 260px);
+        max-width: 960px;
+        margin-right: auto;
+        padding: 32px 40px;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+    }
+
+    body.has-app-shell .page-app {
+        padding-bottom: 40px;
+    }
+
+    /* Desktop grid layouts */
+    .quick-actions-grid {
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 16px;
+    }
+
+    .balance-preview-card {
+        padding: 24px 28px;
+    }
+
+    .dash-header {
+        margin-bottom: 24px;
+    }
+}
+
+/* ════════════════════════════════════════════
+   Input Wrappers & Visibility Toggles
+   ════════════════════════════════════════════ */
+.pin-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.pin-input-wrap input {
+    width: 100%;
+    padding-right: 42px !important;
+}
+
+.pin-toggle-btn {
+    position: absolute;
+    right: 12px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    padding: 4px;
+    transition: color var(--transition);
+}
+
+.pin-toggle-btn:hover {
+    color: var(--text);
+}
+
+.pin-toggle-btn svg {
+    width: 18px;
+    height: 18px;
+}
+

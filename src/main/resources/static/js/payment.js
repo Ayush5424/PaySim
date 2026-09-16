@@ -32,7 +32,10 @@ async function processPayment() {
         return;
     }
 
-    if (payBtn) payBtn.classList.add("btn-loading");
+    if (payBtn) {
+        payBtn.classList.add("btn-loading");
+        payBtn.disabled = true;
+    }
 
     try {
         setLoading(true);
@@ -64,6 +67,9 @@ async function processPayment() {
         updatePinDots("paymentPinDots", "");
     } finally {
         setLoading(false);
-        if (payBtn) payBtn.classList.remove("btn-loading");
+        if (payBtn) {
+            payBtn.classList.remove("btn-loading");
+            payBtn.disabled = false;
+        }
     }
 }

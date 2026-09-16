@@ -1,6 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
     redirectIfAuthed("dashboard.html");
 
+    const pinInput = document.getElementById("signupPin");
+    const toggleBtn = document.getElementById("togglePinVisibility");
+    if (pinInput && toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+            const isPassword = pinInput.type === "password";
+            pinInput.type = isPassword ? "text" : "password";
+            const showIcon = toggleBtn.querySelector(".eye-show");
+            const hideIcon = toggleBtn.querySelector(".eye-hide");
+            if (showIcon) showIcon.style.display = isPassword ? "none" : "";
+            if (hideIcon) hideIcon.style.display = isPassword ? "" : "none";
+        });
+    }
+
     document.getElementById("signupForm")?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const name = document.getElementById("signupName").value.trim();
