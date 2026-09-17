@@ -9,6 +9,7 @@ const API = {
         signup: `${API_BASE}/api/auth/signup`,
         createProfile: `${API_BASE}/api/auth/create-profile`,
         login: `${API_BASE}/api/auth/login`,
+        refresh: `${API_BASE}/api/auth/refresh`,
         me: `${API_BASE}/api/auth/me`,
         logout: `${API_BASE}/api/auth/logout`
     },
@@ -111,7 +112,9 @@ function setSession(user) {
     const existing = getSession() || {};
     const payload = user.user ? user.user : user;
     const session = {
-        token: user.token || existing.token,
+        token: user.token || user.accessToken || existing.token,
+        accessToken: user.accessToken || user.token || existing.accessToken,
+        refreshToken: user.refreshToken || existing.refreshToken,
         name: payload.name || existing.name,
         displayName: payload.displayName || payload.name || existing.displayName,
         phoneNumber: payload.phoneNumber || existing.phoneNumber,
@@ -284,7 +287,7 @@ async function requestJson(url, options = {}) {
         "Content-Type": "application/json",
         ...(options.headers || {})
     };
-    const token = getSession()?.token;
+    const token = getSession()?.token || getSession()?.accessToken;
     if (token) {
         headers.Authorization = `Bearer ${token}`;
     }
@@ -305,10 +308,47 @@ async function requestJson(url, options = {}) {
     }
 
     if (!response.ok || data.status === "FAILED") {
-        if (response.status === 401 || ["Authentication required", "Session expired"].includes(data.message)) {
+        const path = window.location.pathname;
+        const isAuthPage = path.endsWith("login.html") ||
+                           path.endsWith("signup.html") ||
+                           path.endsWith("signup-profile.html") ||
+                           path.endsWith("index.html") ||
+                           path === "/" ||
+                           path === "";
+
+        const isAuthError = response.status === 401 ||
+                            ["Authentication required", "Session expired"].includes(data.message);
+
+        // If authenticated request failed with 401 on an app screen, attempt silent refresh
+        if (isAuthError && !url.includes("/api/auth/refresh") && !isAuthPage) {
+            const refreshToken = getSession()?.refreshToken;
+            if (refreshToken) {
+                try {
+                    const refreshRes = await fetch(API.auth.refresh, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ refreshToken })
+                    });
+                    if (refreshRes.ok) {
+                        const refreshData = await refreshRes.json();
+                        if (refreshData.accessToken) {
+                            updateSession({
+                                token: refreshData.accessToken,
+                                accessToken: refreshData.accessToken,
+                                ...(refreshData.refreshToken ? { refreshToken: refreshData.refreshToken } : {})
+                            });
+                            // Retry original request with refreshed token
+                            return requestJson(url, options);
+                        }
+                    }
+                } catch {
+                    // Token refresh failed, continue to clear session
+                }
+            }
             clearSession();
             window.location.replace("login.html");
         }
+
         throw new Error(data.message || "Request failed");
     }
 

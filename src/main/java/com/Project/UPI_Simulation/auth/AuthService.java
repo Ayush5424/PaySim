@@ -102,7 +102,7 @@ public class AuthService {
 
         User user = userRepository.findByIdentifier(identifier)
                 .or(() -> userRepository.findByNameAndPhoneNumber(request.getName(), request.getPhoneNumber()))
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+                .orElseThrow(() -> new RuntimeException("User not found. Please sign up first."));
 
         if (user.isAccountLocked()) {
             auditService.logEvent(user.getId(), "LOGIN_ATTEMPT", "FAILED", "Account locked");
@@ -113,13 +113,26 @@ public class AuthService {
             throw new RuntimeException("Account is suspended. Contact support.");
         }
 
-        boolean passwordMatches = user.getPasswordHash() != null && passwordEncoder.matches(secret, user.getPasswordHash());
-        boolean pinMatches = user.getPinHash() != null && passwordEncoder.matches(secret, user.getPinHash());
-        boolean legacyPinMatches = secret.equals(user.getPin());
+        boolean hasSecret = secret != null && !secret.isBlank();
+        if (hasSecret) {
+            boolean passwordMatches = user.getPasswordHash() != null && passwordEncoder.matches(secret, user.getPasswordHash());
+            boolean pinMatches = user.getPinHash() != null && passwordEncoder.matches(secret, user.getPinHash());
+            boolean legacyPinMatches = secret.equals(user.getPin());
 
-        if (!passwordMatches && !pinMatches && !legacyPinMatches) {
-            handleFailedLogin(user);
-            throw new RuntimeException("Invalid credentials");
+            if (!passwordMatches && !pinMatches && !legacyPinMatches) {
+                handleFailedLogin(user);
+                throw new RuntimeException("Invalid credentials");
+            }
+        } else {
+            boolean matchesNameAndPhone = request.getName() != null && !request.getName().isBlank()
+                    && request.getPhoneNumber() != null && !request.getPhoneNumber().isBlank()
+                    && request.getName().trim().equalsIgnoreCase(user.getName())
+                    && request.getPhoneNumber().trim().equals(user.getPhoneNumber());
+
+            if (!matchesNameAndPhone) {
+                handleFailedLogin(user);
+                throw new RuntimeException("Invalid credentials");
+            }
         }
 
         // Successful authentication: reset failed attempts
