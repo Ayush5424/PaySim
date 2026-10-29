@@ -9,6 +9,9 @@ target/
 .env.*
 !.env.example
 
+# Local backup
+legacy-frontend-backup/
+
 ### STS ###
 .apt_generated
 .classpath

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
 @Configuration
-@ConditionalOnProperty(name = "spring.kafka.bootstrap-servers")
+@ConditionalOnProperty(name = "spring.kafka.enabled", havingValue = "true", matchIfMissing = false)
 public class KafkaConfig {
 
     @Value("${app.kafka.topics.payment-events:paysim-payment-events}")

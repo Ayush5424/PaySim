@@ -1,58 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0b1528">
-    <title>PaySim — UPI Simulation</title>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234F46E5'/><path d='M9 16h14M16 9v14' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round'/></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PaySim</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="page-auth-body">
-<div class="ambient-bg" aria-hidden="true">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-</div>
-
-<div class="app-container page page-auth">
-    <div class="auth-content">
-        <div class="brand-hero">
-            <div class="brand-logo">
-                <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                    <rect width="48" height="48" rx="14" fill="url(#logoGrad)"/>
-                    <path d="M14 24h20M24 14v20" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-                    <defs>
-                        <linearGradient id="logoGrad" x1="0" y1="0" x2="48" y2="48">
-                            <stop stop-color="#0f766e"/><stop offset="1" stop-color="#1d4ed8"/>
-                        </linearGradient>
-                    </defs>
-                </svg>
-            </div>
-            <h1 class="brand-title">PaySim</h1>
-            <p class="brand-tagline">Fast, secure UPI payments — simulated for learning</p>
-        </div>
-
-        <div class="welcome-features">
-            <div class="feature-chip"><span class="feature-icon"></span><span>Instant transfers</span></div>
-            <div class="feature-chip"><span class="feature-icon"></span><span>QR &amp; phone pay</span></div>
-        </div>
-
-        <div class="auth-actions">
-            <a href="login.html" class="btn btn-primary btn-lg">Log In</a>
-            <a href="signup.html" class="btn btn-glass btn-lg">Create Account</a>
-        </div>
-
-        <p class="auth-footer-note">Simulation only — no real money involved</p>
-    </div>
-</div>
-
-<div id="toastRoot" class="toast-root"></div>
-<script src="js/common.js"></script>
-<script>
-    redirectIfAuthed("dashboard.html");
-</script>
-</body>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script type="module" crossorigin src="/assets/index-CgGmnv7J.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor-react-PvNMJrD_.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-icons-Dde5AfEB.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-qr-AHjsa0js.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-Cy0bqRQt.css">
+  </head>
+  <body class="bg-slate-950 text-slate-100 antialiased selection:bg-brand-500 selection:text-white">
+    <div id="root"></div>
+  </body>
 </html>

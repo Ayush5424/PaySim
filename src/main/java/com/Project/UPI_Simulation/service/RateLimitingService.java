@@ -24,7 +24,7 @@ public class RateLimitingService {
     private final Map<String, TokenBucket> inMemoryBuckets = new ConcurrentHashMap<>();
 
     public RateLimitingService(
-            StringRedisTemplate redisTemplate,
+            @org.springframework.beans.factory.annotation.Autowired(required = false) StringRedisTemplate redisTemplate,
             @Value("${app.rate-limiting.enabled:true}") boolean enabled,
             @Value("${app.rate-limiting.auth-requests-per-minute:30}") int authLimit,
             @Value("${app.rate-limiting.payment-requests-per-minute:20}") int paymentLimit,

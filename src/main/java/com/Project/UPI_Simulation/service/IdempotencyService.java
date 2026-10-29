@@ -2,7 +2,6 @@ package com.Project.UPI_Simulation.service;
 
 import com.Project.UPI_Simulation.entity.IdempotencyRecord;
 import com.Project.UPI_Simulation.repository.IdempotencyRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -14,11 +13,18 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class IdempotencyService {
 
     private final IdempotencyRepository idempotencyRepository;
     private final StringRedisTemplate redisTemplate;
+
+    public IdempotencyService(
+            IdempotencyRepository idempotencyRepository,
+            @org.springframework.beans.factory.annotation.Autowired(required = false) StringRedisTemplate redisTemplate
+    ) {
+        this.idempotencyRepository = idempotencyRepository;
+        this.redisTemplate = redisTemplate;
+    }
 
     @Transactional
     public Optional<IdempotencyRecord> checkIdempotency(String idempotencyKey, String requestHash) {
