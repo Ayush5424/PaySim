@@ -1,6 +1,8 @@
 # PaySim — UPI Payment Simulation Platform
 
-A **production-grade UPI Payment Simulation** built with Spring Boot 4, Java 21, PostgreSQL, Redis, Apache Kafka, and a modern **React 18 + TypeScript + Vite** developer dashboard.
+**Topics:** `spring-boot`, `kafka`, `redis`, `postgresql`, `upi`, `jwt`
+
+A UPI Payment Simulation **built with production patterns (idempotency, row locking, Kafka events)** using Spring Boot 4, Java 21, PostgreSQL, Redis, Apache Kafka, and a modern **React 18 + TypeScript + Vite** developer dashboard.
 
 > **Note:** This is a simulation project for learning and portfolio purposes. It accurately simulates UPI 2.0 transaction lifecycles, concurrency locks, and idempotency guarantees without processing real currency.
 
@@ -32,7 +34,7 @@ Live Demo
 
 ### Payments Core Engine
 * UPI peer-to-peer transfers via `/api/v1/payments/send`
-* **Pessimistic row locking** (SELECT FOR UPDATE) in consistent ID order — zero race conditions
+* **Pessimistic row locking** (SELECT FOR UPDATE) in consistent ID order — prevents concurrent balance update race conditions and deadlocks
 * **Idempotency keys** — duplicate requests return cached response, no double debit
 * PIN verification on every payment
 * Payment receipt endpoint per transaction
@@ -86,7 +88,7 @@ Live Demo
 ## Project Structure
 
 ```text
-UPI-Simulation/
+PaySim/
 │
 ├── frontend/                               # React 18 + TypeScript + Vite Project
 │   ├── src/
@@ -131,7 +133,13 @@ UPI-Simulation/
 
 ## Running Locally
 
-### 1. Frontend Development Mode (Hot Reload + Proxy)
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Ayush5424/PaySim.git
+cd PaySim
+```
+
+### 2. Frontend Development Mode (Hot Reload + Proxy)
 ```bash
 cd frontend
 npm install
@@ -139,18 +147,52 @@ npm run dev
 # Vite runs on http://localhost:5173 with proxy to backend http://localhost:8080
 ```
 
-### 2. Frontend Production Build
+### 3. Frontend Production Build
 ```bash
 cd frontend
 npm run build
 # Compiles React into static resources at src/main/resources/static/
 ```
 
-### 3. Backend Execution
+### 4. Backend Execution
 ```bash
 mvn clean package
 mvn spring-boot:run
 # Serves the complete React application and API on http://localhost:8080
+```
+
+---
+
+## Architecture
+
+```text
+                    ┌─────────────────────────────────────────┐
+                    │       Frontend (React 18 + Vite)        │
+                    │  Dashboard • Stepper • Ledger • Scanner │
+                    └────────────────────┬────────────────────┘
+                                         │ HTTPS / REST
+                                         ▼
+                    ┌─────────────────────────────────────────┐
+                    │        Spring Boot 4 Application        │
+                    ├─────────────────────────────────────────┤
+                    │  • Spring Security 6 (JWT Filter Chain) │
+                    │  • Payment Core (Pessimistic Locking)   │
+                    │  • QR Generator (ZXing Engine)          │
+                    │  • Rate Limiting & Idempotency Engine   │
+                    └───────┬──────────────┬─────────────┬────┘
+                            │              │             │
+              Async Events  │  Idempotency │             │ ACID
+               (Kafka)      │   & Limits   │             │ Transactions
+                            ▼              ▼             ▼
+  ┌───────────────────────────┐  ┌──────────────┐  ┌──────────────────────┐
+  │       Apache Kafka        │  │   Redis 7    │  │ PostgreSQL Database  │
+  ├───────────────────────────┤  ├──────────────┤  ├──────────────────────┤
+  │ paysim-payment-events     │  │ Idempotency  │  │ Users & Accounts     │
+  │ paysim-payment-dlq        │  │ Keys (24h)   │  │ Transactions (Ledger)│
+  │                           │  │              │  │ Auth Sessions        │
+  │ ──► Async Consumer        │  │ Rate Limit   │  │ Audit Logs           │
+  │     (Audit & Notify)      │  │ Counters     │  │                      │
+  └───────────────────────────┘  └──────────────┘  └──────────────────────┘
 ```
 
 ---
@@ -167,6 +209,10 @@ Render (Docker Runtime)
    │     ├─ Stage 1: Node 20 compiles React (Vite)
    │     ├─ Stage 2: JDK 21 packages Spring Boot JAR with compiled static assets
    │     └─ Stage 3: Lightweight JRE 21 runtime container
+   │
+   ├── Redis (Idempotency Cache & Rate Limiting)
+   │
+   ├── Apache Kafka (Payment Events & DLQ)
    │
    ▼
 Neon PostgreSQL (Managed Cloud Database)
